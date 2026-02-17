@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
-const useAuth = create((set) => ({
+type AuthState = {
+	isAuthenticated: boolean;
+	login: () => void;
+	logout: () => void;
+}
+
+const useAuth = create<AuthState>((set) => ({
 	isAuthenticated: false,
 	login: () => set({ isAuthenticated: true }),
 	logout: () => set({ isAuthenticated: false }),

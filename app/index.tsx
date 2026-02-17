@@ -1,17 +1,15 @@
-import { Button, Text, View } from "react-native";
+import useAuth from "@/store/auth";
+import { Redirect } from "expo-router";
 
 export default function Index() {
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-      <Button title="Click me!" onPress={() => alert('Button pressed!')} />
-    </View>
-  );
+	const isAuthenticated = useAuth((state) => state.isAuthenticated);
+
+	if (isAuthenticated) {
+		return <Redirect href={"/(app)/profile"} />
+	}
+
+	return (
+		<Redirect href={"/(auth)/login"} />
+	);
 };
