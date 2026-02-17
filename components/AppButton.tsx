@@ -1,3 +1,5 @@
+import { Colors } from "@/constants/theme";
+import useHandleTheme from "@/store/theme";
 import React from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from "react-native";
 
@@ -22,23 +24,34 @@ export default function AppButton({
 }: AppButtonProps) {
 	const isBlocked = disabled || loading;
 
+	const theme = useHandleTheme((state) => state.theme);
+	const palette = Colors[theme].button[variant];
+
 	return (
 		<Pressable
 			onPress={onPress}
 			disabled={isBlocked}
 			style={({ pressed }) => [
 				styles.base,
-				variant === "primary" ? styles.primary : styles.secondary,
 				fullWidth && styles.fullWidth,
-				pressed && !isBlocked && styles.pressed,
-				isBlocked && styles.disabled,
+				{
+					borderWidth: 1,
+					borderColor: palette.border,
+					backgroundColor: isBlocked
+						? palette.disabledBg
+						: pressed
+							? palette.pressedBg
+							: palette.bg,
+				},
 				style,
 			]}
 		>
 			{loading ? (
-				<ActivityIndicator color={variant === "primary" ? "#fff" : "#111"} />
+				<ActivityIndicator color={isBlocked ? palette.disabledText : palette.text} />
 			) : (
-				<Text style={[styles.text, variant === "secondary" && styles.secondaryText]}>{title}</Text>
+				<Text style={[styles.text, { color: isBlocked ? palette.disabledText : palette.text }]}>
+					{title}
+				</Text>
 			)}
 		</Pressable>
 	);

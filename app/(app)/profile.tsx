@@ -1,14 +1,17 @@
 import AppButton from '@/components/AppButton';
 import useAuth from '@/store/auth';
+import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function LoginScreen() {
+export default function ProfileScreen() {
 
 	const logOut = useAuth((state) => state.logout);
 
 	return (
 		<View style={styles.container}>
 			<Text>Profile Screen</Text>
+
+			<AppButton title="Настройки" onPress={() => router.push("/(app)/settings")} />
 
 			<AppButton
 				title={"Выйти"}

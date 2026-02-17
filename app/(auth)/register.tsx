@@ -1,16 +1,19 @@
 import AppButton from "@/components/AppButton";
+import { useThemeColor } from "@/hooks/use-theme-color";
 import useAuth from "@/store/auth";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function SignInScreen() {
+export default function RegisterScreen() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 
 	const logIn = useAuth((state) => state.login);
+
+	const textColor = useThemeColor({}, "text");
 
 	const handleSignIn = async () => {
 		let validationError = "";
@@ -39,16 +42,16 @@ export default function SignInScreen() {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Регистрация</Text>
+			<Text style={[{ color: textColor }, styles.title]}>Регистрация</Text>
 			<TextInput
-				style={styles.input}
+				style={[{ color: textColor }, styles.input]}
 				placeholder="Ваше имя"
 				value={name}
 				onChangeText={setName}
 				autoCapitalize="none"
 			/>
 			<TextInput
-				style={styles.input}
+				style={[{ color: textColor }, styles.input]}
 				placeholder="E-mail"
 				value={email}
 				onChangeText={setEmail}
@@ -56,7 +59,7 @@ export default function SignInScreen() {
 				autoCapitalize="none"
 			/>
 			<TextInput
-				style={styles.input}
+				style={[{ color: textColor }, styles.input]}
 				placeholder="Пароль"
 				value={password}
 				onChangeText={setPassword}
@@ -66,7 +69,7 @@ export default function SignInScreen() {
 			<View style={styles.controls}>
 				<AppButton
 					title="Войти"
-					onPress={() => router.replace("/(auth)/login")}
+					onPress={() => router.push("/(auth)/login")}
 					fullWidth={false}
 					variant="secondary"
 					style={{
