@@ -3,7 +3,7 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import useAuth from "@/store/auth";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
 
 export default function RegisterScreen() {
 	const [name, setName] = useState("");
@@ -41,51 +41,54 @@ export default function RegisterScreen() {
 	};
 
 	return (
-		<View style={styles.container}>
-			<Text style={[{ color: textColor }, styles.title]}>Регистрация</Text>
-			<TextInput
-				style={[{ color: textColor }, styles.input]}
-				placeholder="Ваше имя"
-				value={name}
-				onChangeText={setName}
-				autoCapitalize="none"
-			/>
-			<TextInput
-				style={[{ color: textColor }, styles.input]}
-				placeholder="E-mail"
-				value={email}
-				onChangeText={setEmail}
-				keyboardType="email-address"
-				autoCapitalize="none"
-			/>
-			<TextInput
-				style={[{ color: textColor }, styles.input]}
-				placeholder="Пароль"
-				value={password}
-				onChangeText={setPassword}
-				secureTextEntry
-			/>
-			{error ? <Text style={styles.errorText}>{error}</Text> : null}
-			<View style={styles.controls}>
-				<AppButton
-					title="Войти"
-					onPress={() => router.push("/(auth)/login")}
-					fullWidth={false}
-					variant="secondary"
-					style={{
-						alignSelf: "flex-start"
-					}}
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+
+			<View style={styles.container}>
+				<Text style={[{ color: textColor }, styles.title]}>Регистрация</Text>
+				<TextInput
+					style={[{ color: textColor }, styles.input]}
+					placeholder="Ваше имя"
+					value={name}
+					onChangeText={setName}
+					autoCapitalize="none"
 				/>
-				<AppButton
-					title="Зарегистрироваться"
-					onPress={handleSignIn}
-					fullWidth={false}
-					style={{
-						flex: 1
-					}}
+				<TextInput
+					style={[{ color: textColor }, styles.input]}
+					placeholder="E-mail"
+					value={email}
+					onChangeText={setEmail}
+					keyboardType="email-address"
+					autoCapitalize="none"
 				/>
+				<TextInput
+					style={[{ color: textColor }, styles.input]}
+					placeholder="Пароль"
+					value={password}
+					onChangeText={setPassword}
+					secureTextEntry
+				/>
+				{error ? <Text style={styles.errorText}>{error}</Text> : null}
+				<View style={styles.controls}>
+					<AppButton
+						title="Войти"
+						onPress={() => router.push("/(auth)/login")}
+						fullWidth={false}
+						variant="secondary"
+						style={{
+							alignSelf: "flex-start"
+						}}
+					/>
+					<AppButton
+						title="Зарегистрироваться"
+						onPress={handleSignIn}
+						fullWidth={false}
+						style={{
+							flex: 1
+						}}
+					/>
+				</View>
 			</View>
-		</View>
+		</TouchableWithoutFeedback>
 	);
 };
 
