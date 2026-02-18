@@ -4,7 +4,7 @@ import useHandleTheme from "@/store/theme";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
@@ -40,6 +40,7 @@ export default function RootLayout() {
 		<ThemeProvider value={appTheme}>
 			<SafeAreaProvider>
 				<SafeAreaView style={[styles.container, { backgroundColor }]} edges={["top"]}>
+					<StatusBar />
 					<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
 				</SafeAreaView>
 			</SafeAreaProvider>
