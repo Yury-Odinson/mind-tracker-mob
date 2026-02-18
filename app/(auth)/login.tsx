@@ -1,46 +1,28 @@
 import AppButton from "@/components/AppButton";
+import { useLoginAuth } from "@/hooks/use-login-auth";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import useAuth from "@/store/auth";
 import { router } from "expo-router";
-import React, { useState } from "react";
-import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import React from "react";
+import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
-
-	const logIn = useAuth((state) => state.login);
+	const {
+		email,
+		setEmail,
+		password,
+		setPassword,
+		error,
+		isSubmitting,
+		handleSignIn,
+	} = useLoginAuth();
 
 	const textColor = useThemeColor({}, "text");
 
-	const handleSignIn = async () => {
-		let validationError = "";
-
-		if (!email.trim()) {
-			validationError = "please, enter email";
-		} else if (!password) {
-			validationError = "please, enter password";
-		};
-
-		if (validationError) {
-			setError(validationError);
-			return;
-		};
-
-		setError("");
-
-		try {
-			console.log("Signing in with:", { email, password });
-			logIn();
-		} catch (err) {
-			console.log(err);
-			setError("Invalid email or password");
-		};
-	};
-
 	return (
-		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+		<Pressable
+			style={{ flex: 1 }}
+			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
+		>
 			<View style={styles.container}>
 				<Text style={[{ color: textColor }, styles.title]}>Авторизация</Text>
 				<TextInput
@@ -63,6 +45,7 @@ export default function LoginScreen() {
 					<AppButton
 						title="Регистрация"
 						onPress={() => router.push("/(auth)/register")}
+						disabled={isSubmitting}
 						fullWidth={false}
 						variant="secondary"
 						style={{
@@ -72,6 +55,7 @@ export default function LoginScreen() {
 					<AppButton
 						title="Войти"
 						onPress={handleSignIn}
+						loading={isSubmitting}
 						fullWidth={false}
 						style={{
 							flex: 1
@@ -79,7 +63,7 @@ export default function LoginScreen() {
 					/>
 				</View>
 			</View>
-		</TouchableWithoutFeedback>
+		</Pressable>
 	);
 };
 

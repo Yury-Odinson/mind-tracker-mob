@@ -1,17 +1,14 @@
 import AppButton from "@/components/AppButton";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import useAuth from "@/store/auth";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function RegisterScreen() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
-
-	const logIn = useAuth((state) => state.login);
 
 	const textColor = useThemeColor({}, "text");
 
@@ -33,7 +30,7 @@ export default function RegisterScreen() {
 
 		try {
 			console.log("Registration data:", { name, email, password });
-			logIn();
+			setError("Registration is not implemented yet");
 		} catch (err) {
 			console.log(err);
 			setError("Invalid data");
@@ -41,8 +38,10 @@ export default function RegisterScreen() {
 	};
 
 	return (
-		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-
+		<Pressable
+			style={{ flex: 1 }}
+			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
+		>
 			<View style={styles.container}>
 				<Text style={[{ color: textColor }, styles.title]}>Регистрация</Text>
 				<TextInput
@@ -88,7 +87,7 @@ export default function RegisterScreen() {
 					/>
 				</View>
 			</View>
-		</TouchableWithoutFeedback>
+		</Pressable>
 	);
 };
 

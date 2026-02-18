@@ -1,11 +1,19 @@
 import { Colors } from "@/constants/theme";
+import useAuth from "@/store/auth";
 import useHandleTheme from "@/store/theme";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from "expo-router";
+import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
+	const hydrateSession = useAuth((state) => state.hydrateSession);
+
+	useEffect(() => {
+		void hydrateSession();
+	}, [hydrateSession]);
+
 	const lightAppTheme = {
 		...DefaultTheme,
 		colors: {
