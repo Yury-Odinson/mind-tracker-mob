@@ -80,7 +80,10 @@ export async function apiAuth({
 
 	const options: RequestInit = {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: {
+			"Content-Type": "application/json",
+			"x-client": "mobile"
+		},
 		body: JSON.stringify({ email, password }),
 	};
 
@@ -89,6 +92,7 @@ export async function apiAuth({
 	const normalizedRaw = raw.trim();
 
 	let payload: unknown = normalizedRaw;
+	
 	if (normalizedRaw) {
 		try {
 			payload = JSON.parse(normalizedRaw);

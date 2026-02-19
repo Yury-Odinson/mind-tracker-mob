@@ -15,3 +15,9 @@ export type AuthenticateUserDTO = {
 export type AuthenticateResponseDTO = {
 	accessToken: string;
 };
+
+export type MeResponseDTO = {
+	name: string;
+	email: string;
+	lang: string;
+}

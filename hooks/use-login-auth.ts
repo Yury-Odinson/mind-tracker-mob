@@ -15,8 +15,8 @@ function validateLogin(email: string, password: string): string {
 }
 
 export function useLoginAuth() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [email, setEmail] = useState("we");
+	const [password, setPassword] = useState("we");
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
