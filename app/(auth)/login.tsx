@@ -1,7 +1,7 @@
 import AppButton from "@/components/AppButton";
 import { useLoginAuth } from "@/hooks/use-login-auth";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { router } from "expo-router";
+import { Link } from "expo-router";
 import React from "react";
 import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -16,7 +16,10 @@ export default function LoginScreen() {
 		handleSignIn,
 	} = useLoginAuth();
 
+	const accentColor = useThemeColor({}, "accent");
 	const textColor = useThemeColor({}, "text");
+	const secondaryTextColor = useThemeColor({}, "secondaryText");
+	const borderStyle = useThemeColor({}, "border");
 
 	return (
 		<Pressable
@@ -24,9 +27,10 @@ export default function LoginScreen() {
 			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
 		>
 			<View style={styles.container}>
-				<Text style={[{ color: textColor }, styles.title]}>Авторизация</Text>
+				<Text style={[{ color: textColor }, styles.title]}>Mind tracker</Text>
+				<Text style={[{ color: secondaryTextColor }, styles.description]}>Отмечайте эмоции и наблюдайте динамику</Text>
 				<TextInput
-					style={[{ color: textColor }, styles.input]}
+					style={[{ color: textColor, borderColor: borderStyle }, styles.input]}
 					placeholder="Email"
 					value={email}
 					onChangeText={setEmail}
@@ -34,33 +38,30 @@ export default function LoginScreen() {
 					autoCapitalize="none"
 				/>
 				<TextInput
-					style={[{ color: textColor }, styles.input]}
+					style={[{ color: textColor, borderColor: borderStyle }, styles.input]}
 					placeholder="Password"
 					value={password}
 					onChangeText={setPassword}
 					secureTextEntry
 				/>
 				{error ? <Text style={styles.errorText}>{error}</Text> : null}
-				<View style={styles.controls}>
-					<AppButton
-						title="Регистрация"
-						onPress={() => router.push("/(auth)/register")}
-						disabled={isSubmitting}
-						fullWidth={false}
-						variant="secondary"
-						style={{
-							alignSelf: "flex-start"
-						}}
-					/>
-					<AppButton
-						title="Войти"
-						onPress={handleSignIn}
-						loading={isSubmitting}
-						fullWidth={false}
-						style={{
-							flex: 1
-						}}
-					/>
+
+				<AppButton
+					title="Войти"
+					onPress={handleSignIn}
+					loading={isSubmitting}
+					fullWidth={true}
+					style={{ marginTop: 16 }}
+				/>
+
+				<Link href={"/(auth)/register"}
+					style={[{ color: accentColor, borderBottomColor: accentColor, borderBottomWidth: 1 },
+					styles.linkPass]}
+				>Забыли пароль?</Link>
+
+				<View style={[{ borderTopColor: borderStyle }, styles.assistant]}>
+					<Text style={[{ color: textColor }]}>Нет аккаунта?</Text>
+					<Link href={"/(auth)/register"} style={[{ color: accentColor, borderBottomColor: accentColor }, styles.link]}>Зарегистрироваться</Link>
 				</View>
 			</View>
 		</Pressable>
@@ -70,31 +71,47 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		gap: 16,
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 20,
 	},
 	title: {
-		fontSize: 24,
+		marginTop: 34,
+		fontSize: 34,
+		fontWeight: 600,
+	},
+	description: {
 		marginBottom: 20,
+		fontSize: 20,
+		textAlign: "center",
 	},
 	input: {
 		width: "100%",
 		height: 40,
-		borderColor: "gray",
+		backgroundColor: "#fff",
 		borderWidth: 1,
 		borderRadius: 8,
-		marginBottom: 10,
 		paddingHorizontal: 10,
 	},
 	errorText: {
 		color: 'red',
 		marginBottom: 10,
 	},
-	controls: {
-		marginTop: 16,
-		flexDirection: "row",
-		gap: 16,
-		width: "100%"
+	assistant: {
+		padding: 16,
+		gap: 10,
+		marginTop: "auto",
+		width: "100%",
+		borderTopWidth: 1,
+		alignItems: "center"
 	},
+	link: {
+		fontSize: 18,
+		fontWeight: 600,
+		borderBottomWidth: 1
+	},
+	linkPass: {
+		fontWeight: 600
+	}
 });
