@@ -35,8 +35,8 @@ export function useLoginAuth() {
 		setIsSubmitting(true);
 
 		try {
-			const { accessToken } = await apiAuth({ email: normalizedEmail, password });
-			await applyToken(accessToken);
+			const { accessToken, refreshToken } = await apiAuth({ email: normalizedEmail, password });
+			await applyToken(accessToken, refreshToken);
 			return true;
 		} catch (error) {
 			if (error instanceof Error) {

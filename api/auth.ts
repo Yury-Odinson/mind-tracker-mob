@@ -10,38 +10,43 @@ function getString(value: unknown): string | null {
 	return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+function extractTokenByKeys(payload: unknown, keys: string[]): string | null {
+	if (!payload || typeof payload !== "object") {
+		return null;
+	}
+
+	const source = payload as Record<string, unknown>;
+	for (const key of keys) {
+		const token = getString(source[key]);
+		if (token) {
+			return token;
+		}
+	}
+
+	if (source.data && typeof source.data === "object") {
+		const data = source.data as Record<string, unknown>;
+		for (const key of keys) {
+			const token = getString(data[key]);
+			if (token) {
+				return token;
+			}
+		}
+	}
+
+	return null;
+}
+
 function extractAccessTokenFromPayload(payload: unknown): string | null {
 	const primitive = getString(payload);
 	if (primitive) {
 		return primitive;
 	}
 
-	if (!payload || typeof payload !== "object") {
-		return null;
-	}
+	return extractTokenByKeys(payload, ["accessToken", "access_token", "token", "jwt"]);
+}
 
-	const source = payload as Record<string, unknown>;
-	const directToken =
-		getString(source.accessToken) ??
-		getString(source.access_token) ??
-		getString(source.token) ??
-		getString(source.jwt);
-
-	if (directToken) {
-		return directToken;
-	}
-
-	if (source.data && typeof source.data === "object") {
-		const data = source.data as Record<string, unknown>;
-		return (
-			getString(data.accessToken) ??
-			getString(data.access_token) ??
-			getString(data.token) ??
-			getString(data.jwt)
-		);
-	}
-
-	return null;
+function extractRefreshTokenFromPayload(payload: unknown): string | null {
+	return extractTokenByKeys(payload, ["refreshToken", "refresh_token", "refresh"]);
 }
 
 function extractMessageFromPayload(payload: unknown): string | null {
@@ -66,6 +71,14 @@ function extractAccessTokenFromHeaders(headers: Headers): string | null {
 	}
 
 	return getString(headers.get("x-access-token")) ?? getString(headers.get("x-auth-token"));
+}
+
+function extractRefreshTokenFromHeaders(headers: Headers): string | null {
+	return (
+		getString(headers.get("x-refresh-token")) ??
+		getString(headers.get("x-auth-refresh-token")) ??
+		getString(headers.get("refresh-token"))
+	);
 }
 
 export async function apiAuth({
@@ -101,25 +114,27 @@ export async function apiAuth({
 		}
 	}
 
-	const tokenFromHeaders = extractAccessTokenFromHeaders(response.headers);
-
 	if (!response.ok) {
 		const backendMessage = extractMessageFromPayload(payload);
 		const message = backendMessage ?? response.statusText ?? "Authentication request failed";
 		throw new Error(`POST /api/auth failed: ${response.status}. ${message}`);
 	}
 
-	if (tokenFromHeaders) {
-		return { accessToken: tokenFromHeaders };
-	}
-
-	const tokenFromPayload = extractAccessTokenFromPayload(payload);
-
-	if (!tokenFromPayload) {
+	const accessToken =
+		extractAccessTokenFromHeaders(response.headers) ?? extractAccessTokenFromPayload(payload);
+	if (!accessToken) {
 		throw new Error(
 			"POST /api/auth succeeded but token is missing. Expected accessToken/access_token/token/jwt in body or auth headers.",
 		);
 	}
 
-	return { accessToken: tokenFromPayload };
+	const refreshToken =
+		extractRefreshTokenFromHeaders(response.headers) ?? extractRefreshTokenFromPayload(payload);
+	if (!refreshToken) {
+		throw new Error(
+			"POST /api/auth succeeded but refresh token is missing. Expected refreshToken/refresh_token in body or refresh token headers.",
+		);
+	}
+
+	return { accessToken, refreshToken };
 }

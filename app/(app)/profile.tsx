@@ -1,4 +1,5 @@
 import { apiMe } from '@/api/me';
+import { apiRefresh } from '@/api/refresh';
 import AppButton from '@/components/AppButton';
 import useAuth from '@/store/auth';
 import { router } from 'expo-router';
@@ -10,6 +11,8 @@ export default function ProfileScreen() {
 	const [name, setName] = useState<string>("userName");
 
 	const accessToken = useAuth((state) => state.accessToken);
+	const refreshToken = useAuth((state) => state.refreshToken);
+	const applyLogin = useAuth((state) => state.applyLogin);
 
 	const handleMe = async () => {
 		if (!accessToken) return;
@@ -17,6 +20,13 @@ export default function ProfileScreen() {
 		const userData = await apiMe(accessToken);
 		setName(userData.name);
 	};
+
+	const handleRefresh = async () => {
+		if (!refreshToken) return;
+
+		const nextTokens = await apiRefresh(refreshToken);
+		await applyLogin(nextTokens.accessToken, nextTokens.refreshToken);
+	}
 
 	const logOut = useAuth((state) => state.logout);
 
@@ -26,7 +36,8 @@ export default function ProfileScreen() {
 			<View style={styles.profile}>
 				<Text style={styles.title}>Добро пожаловать, {name}!</Text>
 				<AppButton title="Настройки" onPress={() => router.push("/(app)/settings")} />
-				<AppButton title="check" onPress={() => handleMe()} />
+				<AppButton title="/api/me" onPress={() => handleMe()} />
+				<AppButton title="/api/auth/refresh" onPress={() => handleRefresh()} />
 			</View>
 
 			<AppButton
