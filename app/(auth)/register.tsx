@@ -1,41 +1,24 @@
 import AppButton from "@/components/AppButton";
+import { useRegisterAuth } from "@/hooks/use-register-auth";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function RegisterScreen() {
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
+	const {
+		name,
+		setName,
+		email,
+		setEmail,
+		password,
+		setPassword,
+		error,
+		isSubmitting,
+		handleSignUp,
+	} = useRegisterAuth();
 
 	const textColor = useThemeColor({}, "text");
-
-	const handleSignIn = async () => {
-		let validationError = "";
-
-		if (!email.trim()) {
-			validationError = "Пожалуйста, введите email";
-		} else if (!password) {
-			validationError = "Пожалуйста, введите пароль";
-		};
-
-		if (validationError) {
-			setError(validationError);
-			return;
-		};
-
-		setError("");
-
-		try {
-			console.log("Registration data:", { name, email, password });
-			setError("Registration is not implemented yet");
-		} catch (err) {
-			console.log(err);
-			setError("Invalid data");
-		};
-	};
 
 	return (
 		<Pressable
@@ -71,6 +54,7 @@ export default function RegisterScreen() {
 					<AppButton
 						title="Войти"
 						onPress={() => router.push("/(auth)/login")}
+						disabled={isSubmitting}
 						fullWidth={false}
 						variant="secondary"
 						style={{
@@ -79,7 +63,8 @@ export default function RegisterScreen() {
 					/>
 					<AppButton
 						title="Зарегистрироваться"
-						onPress={handleSignIn}
+						onPress={handleSignUp}
+						loading={isSubmitting}
 						fullWidth={false}
 						style={{
 							flex: 1

@@ -12,6 +12,13 @@ export type AuthenticateUserDTO = {
 	password: string;
 };
 
+export type RegistrationUserDTO = {
+	name: string;
+	email: string;
+	password: string;
+	lang: LangDTO;
+}
+
 export type AuthenticateResponseDTO = {
 	accessToken: string;
 	refreshToken: string;
