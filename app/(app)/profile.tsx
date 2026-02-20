@@ -1,6 +1,7 @@
 import { apiMe } from '@/api/me';
 import { apiRefresh } from '@/api/refresh';
 import AppButton from '@/components/AppButton';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import useAuth from '@/store/auth';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -11,6 +12,9 @@ export default function ProfileScreen() {
 	const [name, setName] = useState<string>("userName");
 
 	const refreshToken = useAuth((state) => state.refreshToken);
+
+	const textColor = useThemeColor({}, "text");
+
 	const applyLogin = useAuth((state) => state.applyLogin);
 
 	const handleMe = async () => {
@@ -31,7 +35,7 @@ export default function ProfileScreen() {
 		<View style={styles.container}>
 
 			<View style={styles.profile}>
-				<Text style={styles.title}>Добро пожаловать, {name}!</Text>
+				<Text style={[{ color: textColor }, styles.title]}>Добро пожаловать, {name}!</Text>
 				<AppButton title="Настройки" onPress={() => router.push("/(app)/settings")} />
 				<AppButton title="/api/me" onPress={() => handleMe()} />
 				<AppButton title="/api/auth/refresh" onPress={() => handleRefresh()} />

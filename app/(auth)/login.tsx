@@ -20,6 +20,7 @@ export default function LoginScreen() {
 	const textColor = useThemeColor({}, "text");
 	const secondaryTextColor = useThemeColor({}, "secondaryText");
 	const borderStyle = useThemeColor({}, "border");
+	const inputBgColor = useThemeColor({}, "inputBg");
 
 	return (
 		<Pressable
@@ -30,7 +31,7 @@ export default function LoginScreen() {
 				<Text style={[{ color: textColor }, styles.title]}>Mind tracker</Text>
 				<Text style={[{ color: secondaryTextColor }, styles.description]}>Отмечайте эмоции и наблюдайте динамику</Text>
 				<TextInput
-					style={[{ color: textColor, borderColor: borderStyle }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, styles.input]}
 					placeholder="Email"
 					value={email}
 					onChangeText={setEmail}
@@ -38,7 +39,7 @@ export default function LoginScreen() {
 					autoCapitalize="none"
 				/>
 				<TextInput
-					style={[{ color: textColor, borderColor: borderStyle }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, styles.input]}
 					placeholder="Password"
 					value={password}
 					onChangeText={setPassword}
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
 	input: {
 		width: "100%",
 		height: 40,
-		backgroundColor: "#fff",
+		// backgroundColor: "#fff",
 		borderWidth: 1,
 		borderRadius: 8,
 		paddingHorizontal: 10,

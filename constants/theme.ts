@@ -15,9 +15,7 @@ export const Colors = {
 		secondaryText: '#818181',
 		background: '#F7F7F8',
 		tint: tintColorLight,
-		icon: '#687076',
-		tabIconDefault: '#687076',
-		tabIconSelected: tintColorLight,
+		inputBg: '#fff',
 		border: '#E6E6EA',
 		button: {
 			primary: {
@@ -44,14 +42,12 @@ export const Colors = {
 		secondaryText: '#d7d7d7',
 		background: '#151718',
 		tint: tintColorDark,
-		icon: '#9BA1A6',
-		tabIconDefault: '#9BA1A6',
-		tabIconSelected: tintColorDark,
+		inputBg: '#9BA1A6',
 		border: '#2A2A33',
 		button: {
 			primary: {
-				bg: "#22d3ee",
-				text: "#333",
+				bg: "#3197eb",
+				text: "#fff",
 				border: "transparent",
 				pressedBg: "#0e7490",
 				disabledBg: "#c9c9c9",
