@@ -22,8 +22,8 @@ export const Colors = {
 				bg: "#3197eb",
 				text: "#fff",
 				border: "transparent",
-				pressedBg: "#0e7490",
-				disabledBg: "#c9c9c9",
+				pressedBg: "#58a7e7",
+				disabledBg: "#82add1",
 				disabledText: "#777"
 			},
 			secondary: {
