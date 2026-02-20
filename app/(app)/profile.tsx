@@ -10,14 +10,11 @@ export default function ProfileScreen() {
 
 	const [name, setName] = useState<string>("userName");
 
-	const accessToken = useAuth((state) => state.accessToken);
 	const refreshToken = useAuth((state) => state.refreshToken);
 	const applyLogin = useAuth((state) => state.applyLogin);
 
 	const handleMe = async () => {
-		if (!accessToken) return;
-
-		const userData = await apiMe(accessToken);
+		const userData = await apiMe();
 		setName(userData.name);
 	};
 

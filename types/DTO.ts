@@ -20,7 +20,7 @@ export type AuthenticateResponseDTO = {
 export type MeResponseDTO = {
 	name: string;
 	email: string;
-	lang: string;
+	lang: LangDTO;
 }
 
 export type RefreshResponseDTO = {

@@ -1,33 +1,19 @@
 import { MeResponseDTO } from "@/types/DTO";
+import axios from "axios";
+import { apiClient } from "./client";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+export async function apiMe(): Promise<MeResponseDTO> {
+	try {
+		const response = await apiClient.get<MeResponseDTO>("/api/me");
 
-if (!BASE_URL) {
-	console.warn("EXPO_PUBLIC_API_BASE_URL is not set!");
-}
+		console.log("debug: /api/me");
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			const status = error.response?.status;
+			throw new Error(`GET /api/me failed${status ? `: ${status}` : ""}`);
+		}
 
-export async function apiMe(accessToken: string): Promise<MeResponseDTO> {
-	if (!BASE_URL) {
-		throw new Error("EXPO_PUBLIC_API_BASE_URL is not set");
+		throw error;
 	}
-
-	const URL = `${BASE_URL}/api/me`;
-
-	const options: RequestInit = {
-		method: "GET",
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	};
-
-	const response = await fetch(URL, options);
-
-	if (!response.ok) {
-		const message = response.statusText ?? "/api/me request failed";
-		throw new Error(`GET /api/me failed: ${response.status}, ${message}`);
-	}
-
-	const data = (await response.json()) as MeResponseDTO;
-	
-	return data;
 }

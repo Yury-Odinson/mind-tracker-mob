@@ -1,32 +1,23 @@
 import { RefreshResponseDTO } from "@/types/DTO";
-
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
-
-if (!BASE_URL) {
-	console.warn("EXPO_PUBLIC_API_BASE_URL is not set!");
-}
+import axios from "axios";
+import { authClient } from "./client";
 
 export async function apiRefresh(currentRefreshToken: string): Promise<RefreshResponseDTO> {
-	if (!BASE_URL) {
-		throw new Error("EXPO_PUBLIC_API_BASE_URL is not set");
+	try {
+		const response = await authClient.post<RefreshResponseDTO>(
+			"/api/auth/refresh",
+			{ refreshToken: currentRefreshToken },
+			{ withCredentials: true },
+		);
+
+		console.log("debug: /api/auth/refresh");
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			const status = error.response?.status;
+			throw new Error(`POST /api/auth/refresh failed${status ? `: ${status}` : ""}`);
+		}
+
+		throw error;
 	}
-
-	const URL = `${BASE_URL}/api/auth/refresh`;
-
-	const options: RequestInit = {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"x-client": "mobile"
-		},
-		credentials: "include",
-		body: JSON.stringify({ refreshToken: currentRefreshToken }),
-	};
-
-	const response = await fetch(URL, options);
-	if (!response.ok) {
-		throw new Error(`POST /api/auth/refresh failed: ${response.status}. ${response.statusText}`);
-	}
-
-	return response.json() as Promise<RefreshResponseDTO>;
 }
