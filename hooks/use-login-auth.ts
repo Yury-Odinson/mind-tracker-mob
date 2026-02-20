@@ -2,16 +2,38 @@ import { apiAuth } from "@/api/auth";
 import useAuth from "@/store/auth";
 import { useCallback, useState } from "react";
 
+const DEFAULT_LOGIN_ERROR = "Не удалось выполнить вход. Попробуйте еще раз.";
+
 function validateLogin(email: string, password: string): string {
 	if (!email.trim()) {
-		return "please, enter email";
+		return "Введите email.";
 	}
 
 	if (!password) {
-		return "please, enter password";
+		return "Введите пароль.";
 	}
 
 	return "";
+}
+
+function toUserLoginError(error: unknown): string {
+	if (!(error instanceof Error)) {
+		return DEFAULT_LOGIN_ERROR;
+	}
+
+	const message = error.message.trim();
+	const normalizedMessage = message.toLowerCase();
+
+	if (normalizedMessage.includes("401")) {
+		return "Неверный email или пароль.";
+	}
+
+	if (normalizedMessage.includes("500")) {
+		return "Ошибка сервера. Попробуйте позже.";
+	}
+
+	return "Не удалось выполнить вход. Проверьте данные и попробуйте снова.";
+
 }
 
 export function useLoginAuth() {
@@ -39,12 +61,7 @@ export function useLoginAuth() {
 			await applyToken(accessToken, refreshToken);
 			return true;
 		} catch (error) {
-			if (error instanceof Error) {
-				setError(error.message);
-				return false;
-			}
-
-			setError("Authentication failed");
+			setError(toUserLoginError(error));
 			return false;
 		} finally {
 			setIsSubmitting(false);
