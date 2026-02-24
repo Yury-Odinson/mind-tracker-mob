@@ -28,9 +28,16 @@ export type MeResponseDTO = {
 	name: string;
 	email: string;
 	lang: LangDTO;
+	recentMoods: MoodDTO[];
 }
 
 export type RefreshResponseDTO = {
 	accessToken: string;
 	refreshToken: string;
+}
+
+type MoodDTO = {
+	moodName: string;
+	note: string;
+	createdAt: string;
 }

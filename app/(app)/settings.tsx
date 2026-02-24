@@ -1,11 +1,13 @@
 import AppButton from '@/components/AppButton';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import useAuth from '@/store/auth';
 import useHandleTheme from '@/store/theme';
 import { router } from 'expo-router';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 export default function SettingsScreen() {
 
+	const logOut = useAuth((state) => state.logout);
 	const theme = useHandleTheme((state) => state.theme);
 	const toggleTheme = useHandleTheme((state) => state.toggle);
 
@@ -25,6 +27,13 @@ export default function SettingsScreen() {
 
 			<AppButton title="Профиль" onPress={() => router.push("/(app)/profile")} />
 			<AppButton title="test secondary" onPress={() => null} variant="secondary" />
+			<AppButton
+				title={"Выйти"}
+				onPress={logOut}
+				style={{
+					backgroundColor: "#f38989"
+				}}
+			/>
 		</View>
 	);
 };
