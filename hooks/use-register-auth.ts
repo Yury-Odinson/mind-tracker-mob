@@ -3,14 +3,24 @@ import useAuth from "@/store/auth";
 import { LangDTO } from "@/types/DTO";
 import { useCallback, useState } from "react";
 
-function validateRegister(email: string, password: string): string {
+type ValidateRegister = {
+	email: string;
+	password: string;
+	confirmPassword: string;
+}
+
+function validateRegister({ email, password, confirmPassword }: ValidateRegister): string {
 
 	if (!email.trim()) {
-		return "please, enter email";
+		return "Пожалуйста, введите email";
 	}
 
 	if (!password) {
-		return "please, enter password";
+		return "Пожалуйста, введите пароль";
+	}
+
+	if (password !== confirmPassword) {
+		return "Пароли не совпадают"
 	}
 
 	return "";
@@ -18,8 +28,9 @@ function validateRegister(email: string, password: string): string {
 
 export function useRegisterAuth() {
 	const [name, setName] = useState<string>("");
-	const [email, setEmail] = useState<string>("we");
-	const [password, setPassword] = useState<string>("we");
+	const [email, setEmail] = useState<string>("");
+	const [password, setPassword] = useState<string>("");
+	const [confirmPassword, setConfirmPassword] = useState<string>("");
 	const [lang, setLang] = useState<LangDTO>("ru");
 	const [error, setError] = useState<string>("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +40,7 @@ export function useRegisterAuth() {
 	const handleSignUp = useCallback(async () => {
 		const normalizedName = name.trim();
 		const normalizedEmail = email.trim();
-		const validationError = validateRegister(normalizedEmail, password);
+		const validationError = validateRegister({ email, password, confirmPassword });
 
 		if (validationError) {
 			setError(validationError);
@@ -54,12 +65,12 @@ export function useRegisterAuth() {
 				return false;
 			}
 
-			setError("Registration failed");
+			setError("Что-то пошло не так");
 			return false;
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [applyToken, email, lang, name, password]);
+	}, [applyToken, email, lang, name, password, confirmPassword]);
 
 	return {
 		name,
@@ -68,6 +79,8 @@ export function useRegisterAuth() {
 		setEmail,
 		password,
 		setPassword,
+		confirmPassword,
+		setConfirmPassword,
 		lang,
 		setLang,
 		error,

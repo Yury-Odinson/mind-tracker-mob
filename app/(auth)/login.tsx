@@ -27,11 +27,11 @@ export default function LoginScreen() {
 			style={{ flex: 1 }}
 			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
 		>
-			<View style={styles.container}>
-				<Text style={[{ color: textColor }, styles.title]}>Mind tracker</Text>
-				<Text style={[{ color: secondaryTextColor }, styles.description]}>Отмечайте эмоции и наблюдайте динамику</Text>
+			<View style={authStyles.container}>
+				<Text style={[{ color: textColor }, authStyles.title]}>Mind tracker</Text>
+				<Text style={[{ color: secondaryTextColor }, authStyles.description]}>Отмечайте эмоции и наблюдайте динамику</Text>
 				<TextInput
-					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 					placeholder="Email"
 					value={email}
 					onChangeText={setEmail}
@@ -39,13 +39,13 @@ export default function LoginScreen() {
 					autoCapitalize="none"
 				/>
 				<TextInput
-					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 					placeholder="Password"
 					value={password}
 					onChangeText={setPassword}
 					secureTextEntry
 				/>
-				{error ? <Text style={styles.errorText}>{error}</Text> : null}
+				{error ? <Text style={authStyles.errorText}>{error}</Text> : null}
 
 				<AppButton
 					title="Войти"
@@ -57,19 +57,19 @@ export default function LoginScreen() {
 
 				<Link href={"/(auth)/register"}
 					style={[{ color: accentColor, borderBottomColor: accentColor, borderBottomWidth: 1 },
-					styles.linkPass]}
+					authStyles.linkPass]}
 				>Забыли пароль?</Link>
 
-				<View style={[{ borderTopColor: borderStyle }, styles.assistant]}>
-					<Text style={[{ color: textColor }]}>Нет аккаунта?</Text>
-					<Link href={"/(auth)/register"} style={[{ color: accentColor, borderBottomColor: accentColor }, styles.link]}>Зарегистрироваться</Link>
+				<View style={[{ borderTopColor: borderStyle }, authStyles.assistant]}>
+					<Text style={[{ color: secondaryTextColor }]}>Нет аккаунта?</Text>
+					<Link href={"/(auth)/register"} style={[{ color: accentColor, borderBottomColor: accentColor }, authStyles.link]}>Зарегистрироваться</Link>
 				</View>
 			</View>
 		</Pressable>
 	);
 };
 
-const styles = StyleSheet.create({
+export const authStyles = StyleSheet.create({
 	container: {
 		flex: 1,
 		gap: 16,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
 		padding: 20,
 	},
 	title: {
-		marginTop: 34,
+		marginTop: 100,
 		fontSize: 34,
 		fontWeight: 600,
 	},
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
 	input: {
 		width: "100%",
 		height: 40,
-		// backgroundColor: "#fff",
 		borderWidth: 1,
 		borderRadius: 8,
 		paddingHorizontal: 10,

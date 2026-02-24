@@ -1,9 +1,10 @@
 import AppButton from "@/components/AppButton";
 import { useRegisterAuth } from "@/hooks/use-register-auth";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { router } from "expo-router";
+import { Link } from "expo-router";
 import React from "react";
 import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { authStyles } from "./login";
 
 export default function RegisterScreen() {
 	const {
@@ -13,29 +14,35 @@ export default function RegisterScreen() {
 		setEmail,
 		password,
 		setPassword,
+		confirmPassword,
+		setConfirmPassword,
 		error,
 		isSubmitting,
 		handleSignUp,
 	} = useRegisterAuth();
 
+	const accentColor = useThemeColor({}, "accent");
 	const textColor = useThemeColor({}, "text");
+	const secondaryTextColor = useThemeColor({}, "secondaryText");
+	const borderStyle = useThemeColor({}, "border");
+	const inputBgColor = useThemeColor({}, "inputBg");
 
 	return (
 		<Pressable
 			style={{ flex: 1 }}
 			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
 		>
-			<View style={styles.container}>
-				<Text style={[{ color: textColor }, styles.title]}>Регистрация</Text>
+			<View style={authStyles.container}>
+				<Text style={[{ color: textColor, marginBottom: 24, }, authStyles.title]}>Создать аккаунт</Text>
 				<TextInput
-					style={[{ color: textColor }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 					placeholder="Ваше имя"
 					value={name}
 					onChangeText={setName}
 					autoCapitalize="none"
 				/>
 				<TextInput
-					style={[{ color: textColor }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 					placeholder="E-mail"
 					value={email}
 					onChangeText={setEmail}
@@ -43,33 +50,35 @@ export default function RegisterScreen() {
 					autoCapitalize="none"
 				/>
 				<TextInput
-					style={[{ color: textColor }, styles.input]}
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 					placeholder="Пароль"
 					value={password}
 					onChangeText={setPassword}
 					secureTextEntry
 				/>
+				<TextInput
+					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
+					placeholder="Повторите пароль"
+					value={confirmPassword}
+					onChangeText={setConfirmPassword}
+					secureTextEntry
+				/>
+				<Text style={[{ color: secondaryTextColor, fontSize: 12 }]}>Пароль минимум 8 символов.</Text>
+
 				{error ? <Text style={styles.errorText}>{error}</Text> : null}
-				<View style={styles.controls}>
-					<AppButton
-						title="Войти"
-						onPress={() => router.push("/(auth)/login")}
-						disabled={isSubmitting}
-						fullWidth={false}
-						variant="secondary"
-						style={{
-							alignSelf: "flex-start"
-						}}
-					/>
-					<AppButton
-						title="Зарегистрироваться"
-						onPress={handleSignUp}
-						loading={isSubmitting}
-						fullWidth={false}
-						style={{
-							flex: 1
-						}}
-					/>
+
+				<AppButton
+					title="Создать аккаунт"
+					onPress={handleSignUp}
+					loading={isSubmitting}
+					style={{ marginTop: 6 }}
+				/>
+
+				<View style={[{ borderTopColor: borderStyle }, authStyles.assistant]}>
+					<Text style={[{ color: secondaryTextColor }]}>
+						Уже есть аккаунт?
+						<Link href={"/(auth)/login"} style={[{ color: accentColor, borderBottomColor: accentColor, marginLeft: 10 }, authStyles.link]}>Войти</Link>
+					</Text>
 				</View>
 			</View>
 		</Pressable>
@@ -77,33 +86,8 @@ export default function RegisterScreen() {
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		padding: 20,
-	},
-	title: {
-		fontSize: 24,
-		marginBottom: 20,
-	},
-	input: {
-		width: "100%",
-		height: 40,
-		borderColor: "gray",
-		borderWidth: 1,
-		borderRadius: 8,
-		marginBottom: 10,
-		paddingHorizontal: 10,
-	},
 	errorText: {
 		color: 'red',
 		marginBottom: 10,
-	},
-	controls: {
-		marginTop: 16,
-		flexDirection: "row",
-		gap: 16,
-		width: "100%"
 	},
 });
