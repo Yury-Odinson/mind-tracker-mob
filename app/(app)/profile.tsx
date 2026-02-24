@@ -1,15 +1,19 @@
 import AppButton from '@/components/AppButton';
+import Wheel from '@/components/Wheel';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
 import { formatedDate } from '@/utils/formatedDate';
 import { Link, router } from 'expo-router';
+import { Settings } from 'lucide-react-native';
 import { StyleSheet, Text, View } from 'react-native';
-import GearIcon from '../../assets/images/gear.svg';
 
 export default function ProfileScreen() {
 	const me = useMe((state) => state.data);
 	const isMeLoading = useMe((state) => state.isLoading);
 	const textColor = useThemeColor({}, "text");
+	const backgroundColor = useThemeColor({}, "background");
+	const borderColor = useThemeColor({}, "border");
+	const secondaryText = useThemeColor({}, "secondaryText");
 	const name = me?.name ?? "user";
 
 	return (
@@ -18,33 +22,36 @@ export default function ProfileScreen() {
 			<View style={styles.profile}>
 				<View style={styles.header}>
 					{!isMeLoading &&
-						<>
-							<Text style={[{ color: textColor }, styles.title]}>Привет, {name}!</Text>
-
-							<Link href={"/(app)/settings"} style={styles.gear}>
-								<GearIcon width={34} height={34} />
-							</Link>
-						</>
+						<Text style={[{ color: textColor }, styles.title]}>Привет, {name}!</Text>
 					}
+					<Link href={"/(app)/settings"} style={{ marginLeft: "auto" }}>
+						<Settings size={34} color={textColor} />
+					</Link>
 				</View>
 
-				<View style={styles.wheel}>
-					<Text style={[{ color: textColor, fontWeight: 600 }]}>wheel</Text>
-				</View>
+				<Wheel />
 
-				<View style={styles.recent}>
+				<View style={[{ backgroundColor: backgroundColor }, styles.recent]}>
 
-					<Text style={[{ color: textColor, fontWeight: 600 }]}>Последние записи:</Text>
+					<Text style={[{ color: textColor, backgroundColor: backgroundColor },
+					styles.recentTitle]}>Последняя запись:</Text>
 
-					{me?.recentMoods.map(e => (
-						<View key={e.createdAt} style={styles.recentItem}>
-							<Text style={[{ color: textColor }]}>{e.moodName}</Text>
-							<Text style={[{ color: textColor }]}>{formatedDate(e.createdAt.toString())}</Text>
-							<Text style={[{ color: textColor }]}>{e.note}</Text>
+					{me?.recentMoods.map((e) => (
+						<View key={e.createdAt} style={{ gap: 4 }}>
+							<Text style={[{ color: textColor, }, styles.recentItem]}>
+								<Text style={{ marginRight: 10, fontWeight: 600 }}>
+									{e.moodName}
+								</Text>
+								{formatedDate(e.createdAt.toString())}
+							</Text>
+							{
+								e.note &&
+								<Text style={[{ color: secondaryText, borderTopColor: borderColor, borderTopWidth: 1, }]}>{e.note}</Text>
+							}
 						</View>
 					))}
 
-					<AppButton title="Открыть историю" onPress={() => router.push("/(app)/history")} />
+					<AppButton title="Открыть историю" onPress={() => router.push("/(app)/history")} style={{ marginTop: "auto" }} />
 				</View>
 
 			</View>
@@ -58,7 +65,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 20,
 		gap: 16,
-		backgroundColor: "#b7dfff"
 	},
 	profile: {
 		flex: 1,
@@ -69,27 +75,20 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
-	gear: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		width: 44,
-		height: 44,
-		backgroundColor: "#fff",
-		borderRadius: 8
-	},
-	wheel: {
-		flex: 1,
-		borderWidth: 1
-	},
 	recent: {
 		padding: 16,
-		backgroundColor: "#fff",
+		minHeight: 200,
+		gap: 8,
+		borderRadius: 8
+	},
+	recentTitle: {
+		padding: 8,
+		fontWeight: 600,
 		borderRadius: 8
 	},
 	recentItem: {
-		borderBottomWidth: 1,
-		borderBottomColor: "red"
+		display: "flex",
+		justifyContent: "space-between",
 	},
 	title: {
 		fontSize: 24,

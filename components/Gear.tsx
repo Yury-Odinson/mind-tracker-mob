@@ -1,15 +1,20 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
- "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="1280.000000pt" height="1280.000000pt" viewBox="0 0 1280.000000 1280.000000"
- preserveAspectRatio="xMidYMid meet">
-<metadata>
-Created by potrace 1.15, written by Peter Selinger 2001-2017
-</metadata>
-<g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
-fill="#696969" stroke="none">
-<path d="M5385 12786 c-92 -29 -158 -87 -199 -175 -21 -45 -21 -56 -24 -687
+import { useThemeColor } from "@/hooks/use-theme-color";
+import React from "react";
+
+export default function Gear() {
+
+	const accent = useThemeColor({}, "accent");
+
+	return (
+		<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+			width="1280.000000pt" height="1280.000000pt" viewBox="0 0 1280.000000 1280.000000"
+			preserveAspectRatio="xMidYMid meet">
+			{/* <metadata>
+				Created by potrace 1.15, written by Peter Selinger 2001-2017
+			</metadata> */}
+			<g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
+				fill={accent} stroke="none">
+				<path d="M5385 12786 c-92 -29 -158 -87 -199 -175 -21 -45 -21 -56 -24 -687
 l-3 -640 -102 -29 c-388 -108 -835 -298 -1166 -495 l-85 -51 -465 465 c-439
 437 -469 465 -521 482 -82 27 -173 23 -246 -10 -53 -24 -130 -98 -730 -699
 -746 -747 -718 -714 -719 -847 0 -142 -17 -120 494 -633 l456 -458 -24 -42
@@ -35,5 +40,7 @@ c514 -519 499 -507 636 -507 63 0 91 5 130 23 73 34 1390 1352 1426 1426 34
 -557 -580 -1414 -740 -2135 -400 -392 186 -696 485 -885 874 -110 224 -163
 422 -185 680 -14 162 -1 345 35 520 166 798 849 1403 1665 1474 137 12 171 12
 305 0z"/>
-</g>
-</svg>
+			</g>
+		</svg>
+	);
+}
