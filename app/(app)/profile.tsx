@@ -54,7 +54,7 @@ export default function ProfileScreen() {
 					/>
 					<AppButton
 						title={isSend ? "Отправка..." : "Записать эмоцию"}
-						onPress={() => void handleSubmit()}
+						onPress={() => handleSubmit()}
 						disabled={!moodId || isSend}
 						loading={isSend}
 					/>
