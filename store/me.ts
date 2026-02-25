@@ -14,7 +14,6 @@ type MeState = {
 
 const toLimitedMe = (data: MeResponseDTO): MeResponseDTO => ({
 	...data,
-	recentMoods: data.recentMoods.slice(0, 5),
 });
 
 const useMe = create<MeState>((set) => ({
