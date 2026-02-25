@@ -1,11 +1,42 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Svg, { Circle, G, Path } from "react-native-svg";
+import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
 import MoodModal from "./MoodModal";
 
 export default function Wheel() {
 	const [selectedMood, setSelectedMoodId] = useState<string | null>(null);
 	const [note, setNote] = useState<string>("");
+	const centerX = 357.5;
+	const centerY = 362.5;
+	const labelRadii = [80, 160, 214];
+	const labelSizes = [14, 16, 16];
+	const labelColors: Partial<Record<string, string>> = {
+		Ужас: "#FFF",
+		Печаль: "#FFF",
+		Горе: "#FFF",
+		Изумление: "#FFF",
+	};
+	const labelAxes = [
+		{ angle: -90, labels: ["Экстаз", "Радость", "Спокойствие"] },
+		{ angle: -45, labels: ["Восхищение", "Доверие", "Признание"] },
+		{ angle: 0, labels: ["Ужас", "Страх", "Опасение"], yOffsets: [0, 0, 16] },
+		{ angle: 45, labels: ["Изумление", "Удивление", "Отвлечение"] },
+		{ angle: 90, labels: ["Горе", "Печаль", "Задумчивость"] },
+		{ angle: 135, labels: ["Отвращение", "Брезгливость", "Скука"] },
+		{ angle: 180, labels: ["Ярость", "Гнев", "Раздражение"], yOffsets: [0, 0, 16] },
+		{ angle: -135, labels: ["Бдительность", "Ожидание", "Интерес"] },
+	];
+
+	const moodLabels = labelAxes.flatMap(({ angle, labels, yOffsets }) => {
+		const rad = (angle * Math.PI) / 180;
+
+		return labels.map((label, index) => ({
+			label,
+			x: centerX + Math.cos(rad) * labelRadii[index],
+			y: centerY + Math.sin(rad) * labelRadii[index] + (yOffsets?.[index] ?? 0),
+			size: labelSizes[index],
+		}));
+	});
 
 	const handleSetMoodId = (number: number, name: string) => {
 		setNote("");
@@ -53,6 +84,22 @@ export default function Wheel() {
 					<Path onPress={() => handleSetMoodId(10, "Доверие")} fill="#54FF54" d="M405.116,247.535c0,0.012,0,0.021-0.002,0.035l-0.003,0.006   c30.396,12.604,54.706,36.908,67.313,67.302c16.034-13.999,32.44-29.401,47.719-46.714c-16.823-29.086-40.647-52.286-68.385-68.329   C434.471,215.173,419.236,231.576,405.116,247.535z" />
 					<Path onPress={() => handleSetMoodId(2, "Признание")} fill="#8CFF8C" d="M520.146,268.164c14.28-16.188,27.571-34.053,38.653-53.998   c-15.08-20.498-32.99-38.264-52.955-52.942c-20.301,11.147-38.08,24.417-54.084,38.611   C479.495,215.878,503.321,239.078,520.146,268.164z" />
 					<Path fill="#FFE1C5" d="M209.157,161.228c-23.319-12.811-49.961-22.827-81.104-28.189   c4.828,30.509,14.916,57.321,28.161,81.157C170.896,194.229,188.659,176.313,209.157,161.228z" />
+				</G>
+				<G id="labels" pointerEvents="none">
+					{moodLabels.map(({ label, x, y, size }) => (
+						<SvgText
+							key={label}
+							x={x}
+							y={y}
+							fill={labelColors[label] ?? "#1A1A1A"}
+							fontSize={size}
+							fontWeight="700"
+							textAnchor="middle"
+							alignmentBaseline="middle"
+						>
+							{label}
+						</SvgText>
+					))}
 				</G>
 			</Svg>
 			<MoodModal
