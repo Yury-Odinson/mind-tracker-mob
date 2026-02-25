@@ -2,7 +2,6 @@ import AppButton from '@/components/AppButton';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useAuth from '@/store/auth';
 import useHandleTheme from '@/store/theme';
-import { router } from 'expo-router';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
 export default function SettingsScreen() {
@@ -25,12 +24,11 @@ export default function SettingsScreen() {
 				<Switch value={isLightTheme} onValueChange={toggleTheme} />
 			</View>
 
-			<AppButton title="Профиль" onPress={() => router.push("/(app)/profile")} />
-			<AppButton title="test secondary" onPress={() => null} variant="secondary" />
 			<AppButton
 				title={"Выйти"}
 				onPress={logOut}
 				style={{
+					marginTop: "auto",
 					backgroundColor: "#f38989"
 				}}
 			/>

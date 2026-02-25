@@ -13,7 +13,7 @@ export const Colors = {
 		accent: '#3197eb',
 		text: '#333',
 		secondaryText: '#818181',
-		background: '#F7F7F8',
+		background: '#F8F9FA',
 		tint: tintColorLight,
 		inputBg: '#fff',
 		border: '#E6E6EA',

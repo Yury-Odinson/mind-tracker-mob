@@ -1,10 +1,7 @@
-import AppButton from '@/components/AppButton';
 import Wheel from '@/components/Wheel';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
 import { formatedDate } from '@/utils/formatedDate';
-import { Link, router } from 'expo-router';
-import { Settings } from 'lucide-react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function ProfileScreen() {
@@ -20,14 +17,10 @@ export default function ProfileScreen() {
 		<View style={styles.container}>
 
 			<View style={styles.profile}>
-				<View style={styles.header}>
-					{!isMeLoading &&
-						<Text style={[{ color: textColor }, styles.title]}>Привет, {name}!</Text>
-					}
-					<Link href={"/(app)/settings"} style={{ marginLeft: "auto" }}>
-						<Settings size={34} color={textColor} />
-					</Link>
-				</View>
+
+				<Text style={[{ color: textColor }, styles.title]}>
+					{isMeLoading ? `loading... ` : `Привет, ${name}!`}
+				</Text>
 
 				<Wheel />
 
@@ -53,7 +46,6 @@ export default function ProfileScreen() {
 						</View>
 					))}
 
-					<AppButton title="Открыть историю" onPress={() => router.push("/(app)/history")} style={{ marginTop: "auto" }} />
 				</View>
 
 			</View>
@@ -72,14 +64,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		gap: 16,
 	},
-	header: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
 	recent: {
 		padding: 16,
-		minHeight: 200,
+		minHeight: 130,
 		gap: 8,
 		borderRadius: 8,
 	},
