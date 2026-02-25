@@ -37,13 +37,15 @@ export default function ProfileScreen() {
 					styles.recentTitle]}>Последняя запись:</Text>
 
 					{me?.recentMoods.map((e) => (
-						<View key={e.createdAt} style={{ gap: 4 }}>
-							<Text style={[{ color: textColor, }, styles.recentItem]}>
-								<Text style={{ marginRight: 10, fontWeight: 600 }}>
+						<View key={e.createdAt} style={{ gap: 6 }}>
+							<View style={{ flexDirection: "row" }}>
+								<Text style={[{ color: textColor, fontSize: 18, fontWeight: 600 }]}>
 									{e.moodName}
 								</Text>
-								{formatedDate(e.createdAt.toString())}
-							</Text>
+								<Text style={[{ color: textColor, marginLeft: "auto" }]}>
+									{formatedDate(e.createdAt.toString())}
+								</Text>
+							</View>
 							{
 								e.note &&
 								<Text style={[{ color: secondaryText, borderTopColor: borderColor, borderTopWidth: 1, }]}>{e.note}</Text>
@@ -79,19 +81,16 @@ const styles = StyleSheet.create({
 		padding: 16,
 		minHeight: 200,
 		gap: 8,
-		borderRadius: 8
+		borderRadius: 8,
 	},
 	recentTitle: {
-		padding: 8,
+		paddingVertical: 8,
 		fontWeight: 600,
-		borderRadius: 8
-	},
-	recentItem: {
-		display: "flex",
-		justifyContent: "space-between",
+		borderRadius: 8,
+		fontSize: 20
 	},
 	title: {
 		fontSize: 24,
-		textAlign: "center",
+		fontWeight: 600
 	},
 });
