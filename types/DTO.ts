@@ -40,3 +40,8 @@ type MoodDTO = {
 	note: string;
 	createdAt: string;
 }
+
+export type CreateMoodRequestDTO = {
+	moodId: number;
+	note: string;
+};

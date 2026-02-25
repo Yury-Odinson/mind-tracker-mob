@@ -1,15 +1,21 @@
 import AppButton from '@/components/AppButton';
 import Wheel from '@/components/Wheel';
+import { useMoodAdd } from '@/hooks/use-mood-add';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
-import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { authStyles } from '../(auth)/login';
 
 export default function ProfileScreen() {
-	const [moodId, setMoodId] = useState<number | null>(null);
-	const [mood, setMood] = useState<string>("");
-	const [note, setNote] = useState<string>("");
+	const {
+		moodId,
+		note,
+		setNote,
+		moodName,
+		isSend,
+		handleMoodSelect,
+		handleSendMood,
+	} = useMoodAdd();
 
 	const me = useMe((state) => state.data);
 	const name = me?.name ?? "user";
@@ -20,17 +26,9 @@ export default function ProfileScreen() {
 	const borderStyle = useThemeColor({}, "border");
 	const inputBgColor = useThemeColor({}, "inputBg");
 
-	const handleMoodSelect = (selectedMoodId: number, selectedMoodName: string) => {
-		setMoodId(selectedMoodId);
-		setMood(selectedMoodName);
-	};
-
-	const handleSendMood = () => {
-		if (!moodId) return;
-		console.log("send: ", moodId, note);
-		setMoodId(null);
-		setMood("");
-		setNote("");
+	const handleSubmit = async () => {
+		const result = await handleSendMood();
+		Alert.alert(result.isSuccess ? "Успешно" : "Ошибка", result.message);
 	};
 
 	return (
@@ -46,7 +44,7 @@ export default function ProfileScreen() {
 				<Wheel onMoodSelect={handleMoodSelect} />
 
 				<View style={[{ backgroundColor: backgroundColor }, styles.actions]}>
-					<Text style={[{ color: textColor }, styles.actionsTitle]}>{mood}</Text>
+					<Text style={[{ color: textColor }, styles.actionsTitle]}>{moodName}</Text>
 					<TextInput
 						style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 						placeholder="Добавьте заметку... (по желанию)"
@@ -54,7 +52,12 @@ export default function ProfileScreen() {
 						onChangeText={setNote}
 						autoCapitalize="none"
 					/>
-					<AppButton title="Записать эмоцию" onPress={() => handleSendMood()} disabled={!moodId} />
+					<AppButton
+						title={isSend ? "Отправка..." : "Записать эмоцию"}
+						onPress={() => void handleSubmit()}
+						disabled={!moodId || isSend}
+						loading={isSend}
+					/>
 				</View>
 
 			</View>
