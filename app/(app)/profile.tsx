@@ -1,17 +1,37 @@
+import AppButton from '@/components/AppButton';
 import Wheel from '@/components/Wheel';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
-import { formatedDate } from '@/utils/formatedDate';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { authStyles } from '../(auth)/login';
 
 export default function ProfileScreen() {
+	const [moodId, setMoodId] = useState<number | null>(null);
+	const [mood, setMood] = useState<string>("");
+	const [note, setNote] = useState<string>("");
+
 	const me = useMe((state) => state.data);
+	const name = me?.name ?? "user";
+
 	const isMeLoading = useMe((state) => state.isLoading);
 	const textColor = useThemeColor({}, "text");
 	const backgroundColor = useThemeColor({}, "background");
-	const borderColor = useThemeColor({}, "border");
-	const secondaryText = useThemeColor({}, "secondaryText");
-	const name = me?.name ?? "user";
+	const borderStyle = useThemeColor({}, "border");
+	const inputBgColor = useThemeColor({}, "inputBg");
+
+	const handleMoodSelect = (selectedMoodId: number, selectedMoodName: string) => {
+		setMoodId(selectedMoodId);
+		setMood(selectedMoodName);
+	};
+
+	const handleSendMood = () => {
+		if (!moodId) return;
+		console.log("send: ", moodId, note);
+		setMoodId(null);
+		setMood("");
+		setNote("");
+	};
 
 	return (
 		<View style={styles.container}>
@@ -21,31 +41,20 @@ export default function ProfileScreen() {
 				<Text style={[{ color: textColor }, styles.title]}>
 					{isMeLoading ? `loading... ` : `Привет, ${name}!`}
 				</Text>
+				<Text style={[{ color: textColor, fontSize: 20 }]}>Что ты сейчас чувствуешь?</Text>
 
-				<Wheel />
+				<Wheel onMoodSelect={handleMoodSelect} />
 
-				<View style={[{ backgroundColor: backgroundColor }, styles.recent]}>
-
-					<Text style={[{ color: textColor, backgroundColor: backgroundColor },
-					styles.recentTitle]}>Последняя запись:</Text>
-
-					{me?.recentMoods.map((e) => (
-						<View key={e.createdAt} style={{ gap: 6 }}>
-							<View style={{ flexDirection: "row" }}>
-								<Text style={[{ color: textColor, fontSize: 18, fontWeight: 600 }]}>
-									{e.moodName}
-								</Text>
-								<Text style={[{ color: textColor, marginLeft: "auto" }]}>
-									{formatedDate(e.createdAt.toString())}
-								</Text>
-							</View>
-							{
-								e.note &&
-								<Text style={[{ color: secondaryText, borderTopColor: borderColor, borderTopWidth: 1, }]}>{e.note}</Text>
-							}
-						</View>
-					))}
-
+				<View style={[{ backgroundColor: backgroundColor }, styles.actions]}>
+					<Text style={[{ color: textColor }, styles.actionsTitle]}>{mood}</Text>
+					<TextInput
+						style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
+						placeholder="Добавьте заметку... (по желанию)"
+						value={note}
+						onChangeText={setNote}
+						autoCapitalize="none"
+					/>
+					<AppButton title="Записать эмоцию" onPress={() => handleSendMood()} disabled={!moodId} />
 				</View>
 
 			</View>
@@ -64,20 +73,20 @@ const styles = StyleSheet.create({
 		flex: 1,
 		gap: 16,
 	},
-	recent: {
-		padding: 16,
-		minHeight: 130,
-		gap: 8,
-		borderRadius: 8,
-	},
-	recentTitle: {
-		paddingVertical: 8,
-		fontWeight: 600,
-		borderRadius: 8,
-		fontSize: 20
-	},
 	title: {
 		fontSize: 24,
 		fontWeight: 600
 	},
+	actions: {
+		height: 150,
+		gap: 16,
+		borderRadius: 8,
+	},
+	actionsTitle: {
+		height: 36,
+		fontSize: 24,
+		fontWeight: 600,
+		textTransform: "uppercase",
+		textAlign: "center"
+	}
 });

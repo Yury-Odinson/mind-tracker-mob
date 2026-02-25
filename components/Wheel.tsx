@@ -1,11 +1,11 @@
-import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
-import MoodModal from "./MoodModal";
 
-export default function Wheel() {
-	const [selectedMood, setSelectedMoodId] = useState<string | null>(null);
-	const [note, setNote] = useState<string>("");
+type WheelProps = {
+	onMoodSelect: (moodId: number, moodName: string) => void;
+};
+
+export default function Wheel({ onMoodSelect }: WheelProps) {
 	const centerX = 357.5;
 	const centerY = 362.5;
 	const labelRadii = [80, 160, 214];
@@ -39,9 +39,7 @@ export default function Wheel() {
 	});
 
 	const handleSetMoodId = (number: number, name: string) => {
-		setNote("");
-		setSelectedMoodId(name);
-		console.log(`${number}, ${name}`);
+		onMoodSelect(number, name);
 	}
 
 	return (
@@ -102,13 +100,6 @@ export default function Wheel() {
 					))}
 				</G>
 			</Svg>
-			<MoodModal
-				visible={selectedMood !== null}
-				mood={selectedMood}
-				note={note}
-				setNote={setNote}
-				onClose={() => setSelectedMoodId(null)}
-			/>
 		</View>
 	);
 }
