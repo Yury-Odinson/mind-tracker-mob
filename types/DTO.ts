@@ -39,6 +39,7 @@ export type MoodDTO = {
 	id: number;
 	moodId: number;
 	moodName: string;
+	color: string;
 	note: string;
 	createdAt: string;
 };

@@ -89,14 +89,13 @@ export default function HistoryScreen() {
 
 				<ScrollView>
 					{moods && moods.map(e => (
-						<MoodListItem key={e.createdAt} moodName={e.moodName} note={e.note} createdAt={e.createdAt} />
+						<MoodListItem key={e.createdAt} moodName={e.moodName} note={e.note} createdAt={e.createdAt} color={e.color} />
 					))}
 				</ScrollView>
 
 			</View>
 			<View style={styles.actions}>
 				{paginationSection()}
-				<Text>page: {page}, totalMoods: {total}, totalPages: {totalPages}</Text>
 			</View>
 		</>
 	);
