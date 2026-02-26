@@ -30,6 +30,58 @@ export default function HistoryScreen() {
 		}, [loadMoods]),
 	);
 
+	const paginationSection = () => {
+		if (!totalPages || totalPages <= 1) return null;
+
+		return (
+			<View style={styles.pagination}>
+				<Pressable
+					onPress={pagination.goPrev}
+					disabled={!pagination.canPrev || isLoading}
+					style={[styles.paginationBtn, { borderColor }]}
+				>
+					<MoveLeft color={pagination.canPrev && !isLoading ? textColor : secondaryText} />
+				</Pressable>
+
+				{pagination.pages.map((item, index) => {
+					if (item === "...") {
+						return (
+							<Text key={`dots-${index}`} style={{ color: secondaryText }}>
+								...
+							</Text>
+						);
+					}
+
+					const isActive = item === page;
+					return (
+						<Pressable
+							key={item}
+							onPress={() => pagination.goTo(item)}
+							disabled={isActive || isLoading}
+							style={[
+								styles.paginationBtn,
+								{
+									borderColor: isActive ? accentColor : borderColor,
+									backgroundColor: isActive ? accentColor : "transparent",
+								},
+							]}
+						>
+							<Text style={{ color: isActive ? "#fff" : textColor }}>{item}</Text>
+						</Pressable>
+					);
+				})}
+
+				<Pressable
+					onPress={pagination.goNext}
+					disabled={!pagination.canNext || isLoading}
+					style={[styles.paginationBtn, { borderColor }]}
+				>
+					<MoveRight color={pagination.canNext && !isLoading ? textColor : secondaryText} />
+				</Pressable>
+			</View>
+		);
+	}
+
 	return (
 		<>
 			<View style={styles.container}>
@@ -43,51 +95,7 @@ export default function HistoryScreen() {
 
 			</View>
 			<View style={styles.actions}>
-				<View style={styles.pagination}>
-					<Pressable
-						onPress={pagination.goPrev}
-						disabled={!pagination.canPrev || isLoading}
-						style={[styles.paginationBtn, { borderColor }]}
-					>
-						<MoveLeft color={pagination.canPrev && !isLoading ? textColor : secondaryText} />
-					</Pressable>
-
-					{pagination.pages.map((item, index) => {
-						if (item === "...") {
-							return (
-								<Text key={`dots-${index}`} style={{ color: secondaryText }}>
-									...
-								</Text>
-							);
-						}
-
-						const isActive = item === page;
-						return (
-							<Pressable
-								key={item}
-								onPress={() => pagination.goTo(item)}
-								disabled={isActive || isLoading}
-								style={[
-									styles.paginationBtn,
-									{
-										borderColor: isActive ? accentColor : borderColor,
-										backgroundColor: isActive ? accentColor : "transparent",
-									},
-								]}
-							>
-								<Text style={{ color: isActive ? "#fff" : textColor }}>{item}</Text>
-							</Pressable>
-						);
-					})}
-
-					<Pressable
-						onPress={pagination.goNext}
-						disabled={!pagination.canNext || isLoading}
-						style={[styles.paginationBtn, { borderColor }]}
-					>
-						<MoveRight color={pagination.canNext && !isLoading ? textColor : secondaryText} />
-					</Pressable>
-				</View>
+				{paginationSection()}
 				<Text>page: {page}, totalMoods: {total}, totalPages: {totalPages}</Text>
 			</View>
 		</>
