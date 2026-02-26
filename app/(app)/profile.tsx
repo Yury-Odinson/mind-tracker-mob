@@ -3,7 +3,7 @@ import Wheel from '@/components/Wheel';
 import { useMoodAdd } from '@/hooks/use-mood-add';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
-import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { authStyles } from '../(auth)/login';
 
 export default function ProfileScreen() {
@@ -32,37 +32,49 @@ export default function ProfileScreen() {
 	};
 
 	return (
-		<View style={styles.container}>
+		<Pressable
+			style={{ flex: 1 }}
+			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
+		>
 
-			<View style={styles.profile}>
+			<View style={styles.container}>
 
-				<Text style={[{ color: textColor }, styles.title]}>
-					{isMeLoading ? `loading... ` : `Привет, ${name}!`}
-				</Text>
-				<Text style={[{ color: textColor, fontSize: 20 }]}>Что ты сейчас чувствуешь?</Text>
+				<View style={styles.profile}>
 
-				<Wheel onMoodSelect={handleMoodSelect} />
+					<Text style={[{ color: textColor }, styles.title]}>
+						{isMeLoading ? `loading... ` : `Привет, ${name}!`}
+					</Text>
+					<Text style={[{ color: textColor, fontSize: 20 }]}>Что ты сейчас чувствуешь?</Text>
 
-				<View style={[{ backgroundColor: backgroundColor }, styles.actions]}>
-					<Text style={[{ color: textColor }, styles.actionsTitle]}>{moodName}</Text>
-					<TextInput
-						style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
-						placeholder="Добавьте заметку... (по желанию)"
-						value={note}
-						onChangeText={setNote}
-						autoCapitalize="none"
-					/>
-					<AppButton
-						title={isSend ? "Отправка..." : "Записать эмоцию"}
-						onPress={() => handleSubmit()}
-						disabled={!moodId || isSend}
-						loading={isSend}
-					/>
+					<Wheel onMoodSelect={handleMoodSelect} />
+
+					<KeyboardAvoidingView
+						behavior={Platform.OS === "ios" ? "position" : "height"}
+						keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+					>
+						<View style={[{ backgroundColor: backgroundColor, borderColor: borderStyle }, styles.actions]}>
+							<Text style={[{ color: textColor }, styles.actionsTitle]}>{moodName}</Text>
+							<TextInput
+								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
+								placeholder="Добавьте заметку... (по желанию)"
+								readOnly={!moodId}
+								value={note}
+								onChangeText={setNote}
+								autoCapitalize="none"
+							/>
+							<AppButton
+								title={isSend ? "Отправка..." : "Записать эмоцию"}
+								onPress={() => handleSubmit()}
+								disabled={!moodId || isSend}
+								loading={isSend}
+							/>
+						</View>
+					</KeyboardAvoidingView>
+
 				</View>
 
 			</View>
-
-		</View>
+		</Pressable>
 	);
 };
 
@@ -81,9 +93,10 @@ const styles = StyleSheet.create({
 		fontWeight: 600
 	},
 	actions: {
-		height: 150,
+		padding: 20,
 		gap: 16,
 		borderRadius: 8,
+		borderWidth: 1
 	},
 	actionsTitle: {
 		height: 36,
