@@ -17,7 +17,7 @@ export type RegistrationUserDTO = {
 	email: string;
 	password: string;
 	lang: LangDTO;
-}
+};
 
 export type AuthenticateResponseDTO = {
 	accessToken: string;
@@ -28,20 +28,34 @@ export type MeResponseDTO = {
 	name: string;
 	email: string;
 	lang: LangDTO;
-}
+};
 
 export type RefreshResponseDTO = {
 	accessToken: string;
 	refreshToken: string;
-}
+};
 
-type MoodDTO = {
+export type MoodDTO = {
+	id: number;
+	moodId: number;
 	moodName: string;
 	note: string;
 	createdAt: string;
-}
+};
 
 export type CreateMoodRequestDTO = {
 	moodId: number;
 	note: string;
+};
+
+export type GetMoodRequestDTO = {
+	page: number;
+	limit: number;
+};
+
+export type MoodResponseDTO = {
+	data: MoodDTO[];
+	total: number;
+	currentPage: number;
+	totalPages: number;
 };
