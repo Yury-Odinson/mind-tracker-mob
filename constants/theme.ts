@@ -17,6 +17,7 @@ export const Colors = {
 		tint: tintColorLight,
 		inputBg: '#fff',
 		border: '#E6E6EA',
+		warning: "#FF6666",
 		button: {
 			primary: {
 				bg: "#3197eb",
@@ -44,6 +45,7 @@ export const Colors = {
 		tint: tintColorDark,
 		inputBg: '#9BA1A6',
 		border: '#2A2A33',
+		warning: "#FF6666",
 		button: {
 			primary: {
 				bg: "#3197eb",
