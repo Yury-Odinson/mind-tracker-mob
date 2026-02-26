@@ -6,8 +6,12 @@ export async function apiGetMood({ page = 1, limit = 20 }: GetMoodRequestDTO): P
 	try {
 		const response = await apiClient.get("/api/mood", {
 			headers: {
-				page: page,
-				limit: limit,
+				page: String(page),
+				limit: String(limit),
+			},
+			params: {
+				page,
+				limit,
 			},
 		});
 
