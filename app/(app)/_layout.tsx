@@ -1,7 +1,7 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import useAuth from "@/store/auth";
 import { Redirect, Tabs } from "expo-router";
-import { History, Settings, User } from "lucide-react-native";
+import { CircleUserRound, History, Settings } from "lucide-react-native";
 
 export default function GroupLayout() {
 	const isAuthenticated = useAuth((state) => state.isAuthenticated);
@@ -35,17 +35,17 @@ export default function GroupLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="profile"
-				options={{
-					title: "Профиль",
-					tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-				}}
-			/>
-			<Tabs.Screen
 				name="history"
 				options={{
 					title: "История",
 					tabBarIcon: ({ color, size }) => <History color={color} size={size} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="profile"
+				options={{
+					title: "Профиль",
+					tabBarIcon: ({ color, size }) => <CircleUserRound color={color} size={size} />,
 				}}
 			/>
 			<Tabs.Screen
