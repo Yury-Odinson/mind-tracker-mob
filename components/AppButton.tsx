@@ -35,8 +35,6 @@ export default function AppButton({
 				styles.base,
 				fullWidth && styles.fullWidth,
 				{
-					borderWidth: 1,
-					borderColor: palette.border,
 					backgroundColor: isBlocked
 						? palette.disabledBg
 						: pressed
