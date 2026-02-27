@@ -1,9 +1,10 @@
 import AppButton from "@/components/AppButton";
+import AppText from "@/components/AppText";
 import { useLoginAuth } from "@/hooks/use-login-auth";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { Link } from "expo-router";
 import React from "react";
-import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
 	const {
@@ -18,7 +19,6 @@ export default function LoginScreen() {
 
 	const accentColor = useThemeColor({}, "accent");
 	const textColor = useThemeColor({}, "text");
-	const secondaryTextColor = useThemeColor({}, "secondaryText");
 	const borderStyle = useThemeColor({}, "border");
 	const inputBgColor = useThemeColor({}, "inputBg");
 
@@ -28,8 +28,9 @@ export default function LoginScreen() {
 			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
 		>
 			<View style={authStyles.container}>
-				<Text style={[{ color: textColor }, authStyles.title]}>Mind tracker</Text>
-				<Text style={[{ color: secondaryTextColor }, authStyles.description]}>Отмечайте эмоции и наблюдайте динамику</Text>
+				<AppText variant={"title"} weight={"bold"} style={{ marginTop: 100, fontSize: 34 }}>Mind tracker</AppText>
+				<AppText variant={"subtitle"} tone={"secondaryText"} style={authStyles.description}>Отмечайте эмоции и наблюдайте динамику</AppText>
+
 				<TextInput
 					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 					placeholder="Email"
@@ -45,7 +46,7 @@ export default function LoginScreen() {
 					onChangeText={setPassword}
 					secureTextEntry
 				/>
-				{error ? <Text style={authStyles.errorText}>{error}</Text> : null}
+				{error ? <AppText tone={"warning"}>{error}</AppText> : null}
 
 				<AppButton
 					title="Войти"
@@ -61,7 +62,7 @@ export default function LoginScreen() {
 				>Забыли пароль?</Link>
 
 				<View style={[{ borderTopColor: borderStyle }, authStyles.assistant]}>
-					<Text style={[{ color: secondaryTextColor }]}>Нет аккаунта?</Text>
+					<AppText tone={"secondaryText"}>Нет аккаунта?</AppText>
 					<Link href={"/(auth)/register"} style={[{ color: accentColor, borderBottomColor: accentColor }, authStyles.link]}>Зарегистрироваться</Link>
 				</View>
 			</View>
@@ -76,11 +77,6 @@ export const authStyles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 20,
-	},
-	title: {
-		marginTop: 100,
-		fontSize: 34,
-		fontWeight: 600,
 	},
 	description: {
 		marginBottom: 20,
