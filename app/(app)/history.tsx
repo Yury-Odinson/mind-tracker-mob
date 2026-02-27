@@ -1,3 +1,4 @@
+import AppText from '@/components/AppText';
 import MoodListItem from '@/components/MoodListItem';
 import { useMoodList } from '@/hooks/use-mood-list';
 import { usePagination } from '@/hooks/use-pagination';
@@ -9,7 +10,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function HistoryScreen() {
 
-	const { moods, page, total, totalPages, isLoading, loadMoods } = useMoodList();
+	const { moods, page, totalPages, isLoading, loadMoods } = useMoodList();
 
 	const textColor = useThemeColor({}, "text");
 	const accentColor = useThemeColor({}, "accent");
@@ -85,7 +86,7 @@ export default function HistoryScreen() {
 	return (
 		<>
 			<View style={styles.container}>
-				<Text style={[{ color: textColor, fontSize: 20 }]}>История</Text>
+				<AppText variant={"title"} weight={"bold"}>История</AppText>
 
 				<ScrollView>
 					{moods && moods.map(e => (

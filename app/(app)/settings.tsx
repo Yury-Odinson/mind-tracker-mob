@@ -1,11 +1,12 @@
 import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useAuth from '@/store/auth';
 import useMe from '@/store/me';
 import useHandleTheme from '@/store/theme';
 import { Moon, Sun } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Switch, TextInput, View } from 'react-native';
 import { authStyles } from '../(auth)/login';
 
 export default function SettingsScreen() {
@@ -78,17 +79,16 @@ export default function SettingsScreen() {
 	return (
 		<View style={styles.container}>
 
-			<Text style={[{ color: textColor }, styles.title]}>Настройки</Text>
+			<AppText variant={"title"} weight={"bold"}>Настройки</AppText>
 
 			<View>
-
-				<Text style={[{ color: textColor }, styles.subTitle]}>Аккаунт</Text>
+				<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Аккаунт</AppText>
 
 				<View style={[{ borderColor: borderColor, backgroundColor: inputBgColor }, styles.item]}>
 
 					<View style={styles.inputLabel}>
 						{name !== "" &&
-							<Text style={[{ color: secondaryTextColor, backgroundColor: inputBgColor }, styles.inputPlaceholder]}>Имя</Text>
+							<AppText variant={"placeholder"}>Имя</AppText>
 						}
 						<TextInput
 							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
@@ -101,7 +101,7 @@ export default function SettingsScreen() {
 
 					<View style={styles.inputLabel}>
 						{email !== "" &&
-							<Text style={[{ color: secondaryTextColor, backgroundColor: inputBgColor }, styles.inputPlaceholder]}>Email</Text>
+							<AppText variant={"placeholder"}>Email</AppText>
 						}
 						<TextInput
 							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
 
 					<View style={styles.inputLabel}>
 						{password !== "" &&
-							<Text style={[{ color: secondaryTextColor, backgroundColor: inputBgColor }, styles.inputPlaceholder]}>Пароль</Text>
+							<AppText variant={"placeholder"}>Пароль</AppText>
 						}
 						<TextInput
 							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
@@ -128,7 +128,7 @@ export default function SettingsScreen() {
 
 					<View style={styles.inputLabel}>
 						{confirmPassword !== "" &&
-							<Text style={[{ color: secondaryTextColor, backgroundColor: inputBgColor }, styles.inputPlaceholder]}>Повторите пароль</Text>
+							<AppText variant={"placeholder"}>Повторите пароль</AppText>
 						}
 						<TextInput
 							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
@@ -142,9 +142,11 @@ export default function SettingsScreen() {
 			</View>
 
 			<View>
-				<Text style={[{ color: textColor }, styles.subTitle]}>Внешний вид</Text>
+				<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Внешний вид</AppText>
+
 				<View style={[{ borderColor: borderColor, backgroundColor: inputBgColor, flexDirection: "row" }, styles.item]}>
-					<Text style={[{ color: textColor }, { fontSize: 20 }]}>Тема оформления</Text>
+					<AppText>Тема оформления</AppText>
+
 					<View style={{ marginLeft: "auto" }}>
 						{themeIcon()}
 					</View>
@@ -191,13 +193,5 @@ const styles = StyleSheet.create({
 	inputLabel: {
 		position: "relative",
 		width: "100%",
-	},
-	inputPlaceholder: {
-		position: "absolute",
-		top: -8,
-		left: 8,
-		paddingHorizontal: 8,
-		fontSize: 12,
-		zIndex: 1
 	}
 });

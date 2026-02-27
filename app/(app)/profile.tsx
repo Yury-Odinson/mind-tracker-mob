@@ -1,9 +1,10 @@
 import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
 import Wheel from '@/components/Wheel';
 import { useMoodAdd } from '@/hooks/use-mood-add';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { authStyles } from '../(auth)/login';
 
 export default function ProfileScreen() {
@@ -41,10 +42,9 @@ export default function ProfileScreen() {
 
 				<View style={styles.profile}>
 
-					<Text style={[{ color: textColor }, styles.title]}>
-						{isMeLoading ? `loading... ` : `Привет, ${name}!`}
-					</Text>
-					<Text style={[{ color: textColor, fontSize: 20 }]}>Что ты сейчас чувствуешь?</Text>
+					<AppText variant={"title"} weight={"bold"}>{isMeLoading ? `Привет!` : `Привет, ${name}!`}</AppText>
+
+					<AppText variant={"subtitle"}>Что ты сейчас чувствуешь?</AppText>
 
 					<Wheel onMoodSelect={handleMoodSelect} />
 
@@ -53,7 +53,7 @@ export default function ProfileScreen() {
 						keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
 					>
 						<View style={[{ backgroundColor: backgroundColor, borderColor: borderStyle }, styles.actions]}>
-							<Text style={[{ color: textColor }, styles.actionsTitle]}>{moodName}</Text>
+							<AppText weight={"bold"} style={styles.actionsTitle}>{moodName}</AppText>
 							<TextInput
 								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
 								placeholder="Добавьте заметку... (по желанию)"

@@ -8,7 +8,7 @@ type StringKeys<T> = {
 	[K in keyof T]: T[K] extends string ? K : never;
 }[keyof T];
 
-type ThemeColorName = StringKeys<Palette>;
+export type ThemeColorName = StringKeys<Palette>;
 
 export function useThemeColor(
 	props: Partial<Record<ThemeName, string>>,
