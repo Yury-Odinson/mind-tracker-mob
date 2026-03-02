@@ -46,7 +46,7 @@ export default function ProfileScreen() {
 
 					<AppText variant={"subtitle"}>Что ты сейчас чувствуешь?</AppText>
 
-					<View style={{ marginHorizontal: -20 }}>
+					<View style={{ marginHorizontal: -20, maxWidth: 500 }}>
 						<Wheel onMoodSelect={handleMoodSelect} />
 					</View>
 

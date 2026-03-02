@@ -23,6 +23,10 @@ const VIEWPORT_HEIGHT = 400;
 const SNAP_STEP_DEG = 45;
 const SECTOR_ANGLE = 45;
 const HALF_SECTOR_ANGLE = SECTOR_ANGLE / 2;
+const FOCUS_AXIS_DEG = -90;
+const AUTO_ALIGN_DURATION_MS = 280;
+const SNAP_DURATION_MS = 220;
+const LABEL_FONT_SIZES = [18, 20, 22] as const;
 
 const SECTORS: SectorDefinition[] = [
 	{
@@ -90,6 +94,7 @@ const SECTORS: SectorDefinition[] = [
 		],
 	},
 ];
+const SECTOR_START_OFFSET_DEG = SECTORS[0].axisDeg - HALF_SECTOR_ANGLE;
 
 type Point = {
 	x: number;
@@ -99,6 +104,11 @@ type Point = {
 function normalizeDeg(deg: number): number {
 	const normalized = deg % 360;
 	return normalized < 0 ? normalized + 360 : normalized;
+}
+
+function closestTurnAngle(baseDeg: number, currentDeg: number): number {
+	const turns = Math.round((currentDeg - baseDeg) / 360);
+	return baseDeg + turns * 360;
 }
 
 function polarToCartesian(cx: number, cy: number, radius: number, angleDeg: number): Point {
@@ -119,15 +129,6 @@ function makeSectorPath(
 ): string {
 	const outerStart = polarToCartesian(cx, cy, outerRadius, startAngleDeg);
 	const outerEnd = polarToCartesian(cx, cy, outerRadius, endAngleDeg);
-
-	if (innerRadius <= 0) {
-		return [
-			`M ${cx} ${cy}`,
-			`L ${outerStart.x} ${outerStart.y}`,
-			`A ${outerRadius} ${outerRadius} 0 0 1 ${outerEnd.x} ${outerEnd.y}`,
-			"Z",
-		].join(" ");
-	}
 
 	const innerEnd = polarToCartesian(cx, cy, innerRadius, endAngleDeg);
 	const innerStart = polarToCartesian(cx, cy, innerRadius, startAngleDeg);
@@ -152,12 +153,11 @@ function textColorByBackground(hex: string): string {
 	const blue = parseInt(normalized.slice(4, 6), 16);
 	const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
 
-	return luminance > 0.62 ? "#1A1A1A" : "#FFFFFF";
+	return luminance > 0.62 ? "#212529" : "#FFFFFF";
 }
 
 export default function Wheel({ onMoodSelect }: WheelProps) {
 	const [viewportWidth, setViewportWidth] = useState(0);
-	const [selectedMoodId, setSelectedMoodId] = useState<number | null>(null);
 	const rotationDeg = useSharedValue(0);
 	const gestureStartAngle = useSharedValue(0);
 	const gestureStartRotation = useSharedValue(0);
@@ -167,18 +167,17 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 			return null;
 		}
 
-		const wheelRadius = Math.max(viewportWidth, 520);
+		const wheelRadius = Math.max(viewportWidth, 420);
 		const ringRadii: [number, number, number, number] = [
 			wheelRadius * 0.20,
 			wheelRadius * 0.50,
 			wheelRadius * 0.74,
-			wheelRadius * 0.96,
+			wheelRadius * 1,
 		];
-		const centerYGlobal = wheelRadius + 24;
+		const centerYGlobal = wheelRadius;
 		const centerXGlobal = viewportWidth / 2;
 
 		return {
-			wheelRadius,
 			wheelDiameter: wheelRadius * 2,
 			centerXGlobal,
 			centerYGlobal,
@@ -194,94 +193,14 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 	}));
 
 	const handleLayout = (event: LayoutChangeEvent) => {
-		setViewportWidth(event.nativeEvent.layout.width);
+		const nextWidth = event.nativeEvent.layout.width;
+		setViewportWidth((currentWidth) => (currentWidth === nextWidth ? currentWidth : nextWidth));
 	};
-
-	const handleMoodPick = (segment: MoodSegment) => {
-		setSelectedMoodId(segment.id);
-		onMoodSelect(segment.id, segment.name);
-	};
-
-	const handleTapPick = (x: number, y: number, currentRotationDeg: number) => {
-		if (!geometry) {
-			return;
-		}
-
-		const dx = x - geometry.centerXGlobal;
-		const dy = y - geometry.centerYGlobal;
-		const distance = Math.hypot(dx, dy);
-
-		const [r0, r1, r2, r3] = geometry.ringRadii;
-		if (distance < r0 || distance > r3) {
-			return;
-		}
-
-		let ringIndex = 0;
-		if (distance >= r1 && distance < r2) {
-			ringIndex = 1;
-		} else if (distance >= r2) {
-			ringIndex = 2;
-		}
-
-		const startOffset = SECTORS[0].axisDeg - HALF_SECTOR_ANGLE;
-		const absoluteAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
-		const wheelAngle = normalizeDeg(absoluteAngle - currentRotationDeg);
-		const sectorIndex = Math.floor(normalizeDeg(wheelAngle - startOffset) / SECTOR_ANGLE) % SECTORS.length;
-
-		const selected = SECTORS[sectorIndex]?.rings[ringIndex];
-		if (selected) {
-			handleMoodPick(selected);
-		}
-	};
-
-	const panGesture = Gesture.Pan()
-		.minDistance(6)
-		.onBegin((event) => {
-			if (!geometry) {
-				return;
-			}
-
-			const angle = Math.atan2(event.y - geometry.centerYGlobal, event.x - geometry.centerXGlobal);
-			gestureStartAngle.value = angle;
-			gestureStartRotation.value = rotationDeg.value;
-		})
-		.onUpdate((event) => {
-			if (!geometry) {
-				return;
-			}
-
-			const angle = Math.atan2(event.y - geometry.centerYGlobal, event.x - geometry.centerXGlobal);
-			const delta = Math.atan2(
-				Math.sin(angle - gestureStartAngle.value),
-				Math.cos(angle - gestureStartAngle.value),
-			);
-
-			rotationDeg.value = gestureStartRotation.value + (delta * 180) / Math.PI;
-		})
-		.onEnd(() => {
-			const snapped = Math.round(rotationDeg.value / SNAP_STEP_DEG) * SNAP_STEP_DEG;
-			rotationDeg.value = withTiming(snapped, {
-				duration: 220,
-				easing: Easing.out(Easing.cubic),
-			});
-		});
-
-	const tapGesture = Gesture.Tap().onEnd((event, success) => {
-		if (!success) {
-			return;
-		}
-
-		runOnJS(handleTapPick)(event.x, event.y, rotationDeg.value);
-	});
-
-	const gesture = Gesture.Exclusive(panGesture, tapGesture);
 
 	const segmentPaths = useMemo(() => {
 		if (!geometry) {
 			return [];
 		}
-
-		const labelsFontSize = [15, 15, 15];
 
 		return SECTORS.flatMap((sector, sectorIndex) => {
 			const startDeg = sector.axisDeg - HALF_SECTOR_ANGLE;
@@ -312,7 +231,7 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 					),
 					labelX: labelPoint.x,
 					labelY: labelPoint.y,
-					labelSize: labelsFontSize[ringIndex],
+					labelSize: LABEL_FONT_SIZES[ringIndex],
 					labelRotate: sector.axisDeg + 90,
 					textColor: textColorByBackground(segment.color),
 				};
@@ -320,101 +239,149 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 		});
 	}, [geometry]);
 
+	if (!geometry) {
+		return <View style={styles.container} onLayout={handleLayout} />;
+	}
+
+	const {
+		centerXGlobal,
+		centerYGlobal,
+		localCenter,
+		ringRadii,
+		wheelDiameter,
+		wheelLeft,
+		wheelTop,
+	} = geometry;
+	const [r0, r1, r2, r3] = ringRadii;
+
+	const handleTapPick = (x: number, y: number, currentRotationDeg: number) => {
+		const dx = x - centerXGlobal;
+		const dy = y - centerYGlobal;
+		const distance = Math.hypot(dx, dy);
+
+		if (distance < r0 || distance > r3) {
+			return;
+		}
+
+		const ringIndex = distance < r1 ? 0 : distance < r2 ? 1 : 2;
+		const absoluteAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+		const wheelAngle = normalizeDeg(absoluteAngle - currentRotationDeg);
+		const sectorIndex =
+			Math.floor(normalizeDeg(wheelAngle - SECTOR_START_OFFSET_DEG) / SECTOR_ANGLE) % SECTORS.length;
+		const selectedSector = SECTORS[sectorIndex];
+		const selected = selectedSector.rings[ringIndex];
+
+		onMoodSelect(selected.id, selected.name);
+
+		const targetRotation = closestTurnAngle(
+			FOCUS_AXIS_DEG - selectedSector.axisDeg,
+			currentRotationDeg,
+		);
+
+		rotationDeg.value = withTiming(targetRotation, {
+			duration: AUTO_ALIGN_DURATION_MS,
+			easing: Easing.out(Easing.cubic),
+		});
+	};
+
+	const panGesture = Gesture.Pan()
+		.minDistance(6)
+		.onBegin((event) => {
+			const angle = Math.atan2(event.y - centerYGlobal, event.x - centerXGlobal);
+			gestureStartAngle.value = angle;
+			gestureStartRotation.value = rotationDeg.value;
+		})
+		.onUpdate((event) => {
+			const angle = Math.atan2(event.y - centerYGlobal, event.x - centerXGlobal);
+			const delta = Math.atan2(
+				Math.sin(angle - gestureStartAngle.value),
+				Math.cos(angle - gestureStartAngle.value),
+			);
+
+			rotationDeg.value = gestureStartRotation.value + (delta * 180) / Math.PI;
+		})
+		.onEnd(() => {
+			const snapped = Math.round(rotationDeg.value / SNAP_STEP_DEG) * SNAP_STEP_DEG;
+			rotationDeg.value = withTiming(snapped, {
+				duration: SNAP_DURATION_MS,
+				easing: Easing.out(Easing.cubic),
+			});
+		});
+
+	const tapGesture = Gesture.Tap().onEnd((event, success) => {
+		if (!success) {
+			return;
+		}
+
+		runOnJS(handleTapPick)(event.x, event.y, rotationDeg.value);
+	});
+
+	const gesture = Gesture.Exclusive(panGesture, tapGesture);
+
 	return (
 		<View style={styles.container} onLayout={handleLayout}>
-			{geometry ? (
-				<GestureDetector gesture={gesture}>
-					<View style={styles.gestureSurface}>
-						<Animated.View
-							style={[
-								styles.wheel,
-								{
-									width: geometry.wheelDiameter,
-									height: geometry.wheelDiameter,
-									left: geometry.wheelLeft,
-									top: geometry.wheelTop,
-								},
-								wheelAnimatedStyle,
-							]}
+			<GestureDetector gesture={gesture}>
+				<View style={styles.gestureSurface}>
+					<Animated.View
+						style={[
+							styles.wheel,
+							{
+								width: wheelDiameter,
+								height: wheelDiameter,
+								left: wheelLeft,
+								top: wheelTop,
+							},
+							wheelAnimatedStyle,
+						]}
+					>
+						<Svg
+							width={wheelDiameter}
+							height={wheelDiameter}
+							viewBox={`0 0 ${wheelDiameter} ${wheelDiameter}`}
 						>
-							<Svg
-								width={geometry.wheelDiameter}
-								height={geometry.wheelDiameter}
-								viewBox={`0 0 ${geometry.wheelDiameter} ${geometry.wheelDiameter}`}
-							>
-								<G>
-									{segmentPaths.map((segment) => (
-										<Path
-											key={`${segment.id}-${segment.sectorIndex}-${segment.ringIndex}`}
-											d={segment.path}
-											fill={segment.color}
-										// stroke={selectedMoodId === segment.id ? "#111111" : "#1A1A1A"}
-										// strokeWidth={selectedMoodId === segment.id ? 3 : 1.2}
-										/>
-									))}
-								</G>
+							<G>
+								{segmentPaths.map((segment) => (
+									<Path
+										key={`${segment.id}-${segment.sectorIndex}-${segment.ringIndex}`}
+										d={segment.path}
+										fill={segment.color}
+									/>
+								))}
+							</G>
 
-								<G pointerEvents="none" opacity={0.9}>
+							<G pointerEvents="none" opacity={0.9}>
+								{ringRadii.map((radius, index) => (
 									<Circle
-										cx={geometry.localCenter}
-										cy={geometry.localCenter}
-										r={geometry.ringRadii[0]}
+										key={`ring-${index}`}
+										cx={localCenter}
+										cy={localCenter}
+										r={radius}
 										fill="none"
-									// stroke="#1A1A1A"
-									// strokeWidth={1}
-									// strokeDasharray="3 6"
 									/>
-									<Circle
-										cx={geometry.localCenter}
-										cy={geometry.localCenter}
-										r={geometry.ringRadii[1]}
-										fill="none"
-									// stroke="#1A1A1A"
-									// strokeWidth={1}
-									// strokeDasharray="4 8"
-									/>
-									<Circle
-										cx={geometry.localCenter}
-										cy={geometry.localCenter}
-										r={geometry.ringRadii[2]}
-										fill="none"
-									// stroke="#1A1A1A"
-									// strokeWidth={1}
-									// strokeDasharray="4 8"
-									/>
-									<Circle
-										cx={geometry.localCenter}
-										cy={geometry.localCenter}
-										r={geometry.ringRadii[3]}
-										fill="none"
-									// stroke="#1A1A1A"
-									// strokeWidth={1.4}
-									// strokeDasharray="5 9"
-									/>
-								</G>
+								))}
+							</G>
 
-								<G pointerEvents="none">
-									{segmentPaths.map((segment) => (
-										<SvgText
-											key={`label-${segment.id}`}
-											x={segment.labelX}
-											y={segment.labelY}
-											transform={`rotate(${segment.labelRotate} ${segment.labelX} ${segment.labelY})`}
-											fill={segment.textColor}
-											fontSize={segment.labelSize}
-											fontWeight="700"
-											textAnchor="middle"
-											alignmentBaseline="middle"
-										>
-											{segment.name}
-										</SvgText>
-									))}
-								</G>
-							</Svg>
-						</Animated.View>
-					</View>
-				</GestureDetector>
-			) : null}
+							<G pointerEvents="none">
+								{segmentPaths.map((segment) => (
+									<SvgText
+										key={`label-${segment.id}`}
+										x={segment.labelX}
+										y={segment.labelY}
+										transform={`rotate(${segment.labelRotate} ${segment.labelX} ${segment.labelY})`}
+										fill={segment.textColor}
+										fontSize={segment.labelSize}
+										fontWeight="700"
+										textAnchor="middle"
+										alignmentBaseline="middle"
+									>
+										{segment.name}
+									</SvgText>
+								))}
+							</G>
+						</Svg>
+					</Animated.View>
+				</View>
+			</GestureDetector>
 		</View>
 	);
 }
