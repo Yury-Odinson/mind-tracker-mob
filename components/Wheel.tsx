@@ -43,65 +43,65 @@ const SECTORS: SectorDefinition[] = [
 	{
 		axisDeg: -90,
 		rings: [
-			{ id: 17, name: "Экстаз", color: "#FFE854" },
-			{ id: 9, name: "Радость", color: "#FFFF54" },
-			{ id: 1, name: "Спокойствие", color: "#FFFFB1" },
+			{ id: 17, name: "Экстаз", color: "#FDD835" },
+			{ id: 9, name: "Радость", color: "#FFF176" },
+			{ id: 1, name: "Спокойствие", color: "#FFF9C4" },
 		],
 	},
 	{
 		axisDeg: -45,
 		rings: [
-			{ id: 18, name: "Восхищение", color: "#00B400" },
-			{ id: 10, name: "Доверие", color: "#54FF54" },
-			{ id: 2, name: "Признание", color: "#8CFF8C" },
+			{ id: 18, name: "Восхищение", color: "#81C784" },
+			{ id: 10, name: "Доверие", color: "#C8E6C9" },
+			{ id: 2, name: "Признание", color: "#F1F8E9" },
 		],
 	},
 	{
 		axisDeg: 0,
 		rings: [
-			{ id: 19, name: "Ужас", color: "#008000" },
-			{ id: 11, name: "Страх", color: "#009600" },
-			{ id: 3, name: "Опасение", color: "#8CC68C" },
+			{ id: 19, name: "Ужас", color: "#80CBC4" },
+			{ id: 11, name: "Страх", color: "#B2DFDB" },
+			{ id: 3, name: "Опасение", color: "#E0F2F1" },
 		],
 	},
 	{
 		axisDeg: 45,
 		rings: [
-			{ id: 20, name: "Изумление", color: "#0089E0" },
-			{ id: 12, name: "Удивление", color: "#59BDFF" },
-			{ id: 4, name: "Отвлечение", color: "#A5DBFF" },
+			{ id: 20, name: "Изумление", color: "#29B6F6" },
+			{ id: 12, name: "Удивление", color: "#4FC3F7" },
+			{ id: 4, name: "Отвлечение", color: "#B3E5FC" },
 		],
 	},
 	{
 		axisDeg: 90,
 		rings: [
-			{ id: 21, name: "Горе", color: "#0000C8" },
-			{ id: 13, name: "Печаль", color: "#5151FF" },
-			{ id: 5, name: "Задумчивость", color: "#8C8CFF" },
+			{ id: 21, name: "Горе", color: "#5C6BC0" },
+			{ id: 13, name: "Печаль", color: "#7986CB" },
+			{ id: 5, name: "Задумчивость", color: "#C5CAE9" },
 		],
 	},
 	{
 		axisDeg: 135,
 		rings: [
-			{ id: 22, name: "Отвращение", color: "#DE00DE" },
-			{ id: 14, name: "Брезгливость", color: "#FF54FF" },
-			{ id: 6, name: "Скука", color: "#FFC6FF" },
+			{ id: 22, name: "Отвращение", color: "#AB47BC" },
+			{ id: 14, name: "Брезгливость", color: "#BA68C8" },
+			{ id: 6, name: "Скука", color: "#F8BBD0" },
 		],
 	},
 	{
 		axisDeg: 180,
 		rings: [
-			{ id: 23, name: "Ярость", color: "#D40000" },
-			{ id: 15, name: "Гнев", color: "#FF0000" },
-			{ id: 7, name: "Раздражение", color: "#FF8C8C" },
+			{ id: 23, name: "Ярость", color: "#C62828" },
+			{ id: 15, name: "Гнев", color: "#E57373" },
+			{ id: 7, name: "Раздражение", color: "#EF9A9A" },
 		],
 	},
 	{
 		axisDeg: -135,
 		rings: [
-			{ id: 24, name: "Бдительность", color: "#FF7D00" },
-			{ id: 16, name: "Ожидание", color: "#FFA854" },
-			{ id: 8, name: "Интерес", color: "#FFC48C" },
+			{ id: 24, name: "Бдительность", color: "#FB8C00" },
+			{ id: 16, name: "Ожидание", color: "#FFB74D" },
+			{ id: 8, name: "Интерес", color: "#FFE0B2" },
 		],
 	},
 ];
