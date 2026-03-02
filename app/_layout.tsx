@@ -6,6 +6,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
@@ -55,14 +56,16 @@ export default function RootLayout() {
 	const backgroundColor = Colors[theme].background;
 
 	return (
-		<ThemeProvider value={appTheme}>
-			<SafeAreaProvider>
-				<SafeAreaView style={[styles.container, { backgroundColor }]} edges={["top"]}>
-					<StatusBar />
-					<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
-				</SafeAreaView>
-			</SafeAreaProvider>
-		</ThemeProvider>
+		<GestureHandlerRootView style={styles.container}>
+			<ThemeProvider value={appTheme}>
+				<SafeAreaProvider>
+					<SafeAreaView style={[styles.container, { backgroundColor }]} edges={["top"]}>
+						<StatusBar />
+						<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
+					</SafeAreaView>
+				</SafeAreaProvider>
+			</ThemeProvider>
+		</GestureHandlerRootView>
 	);
 };
 

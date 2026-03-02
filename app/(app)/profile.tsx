@@ -46,7 +46,9 @@ export default function ProfileScreen() {
 
 					<AppText variant={"subtitle"}>Что ты сейчас чувствуешь?</AppText>
 
-					<Wheel onMoodSelect={handleMoodSelect} />
+					<View style={{ marginHorizontal: -20 }}>
+						<Wheel onMoodSelect={handleMoodSelect} />
+					</View>
 
 					<KeyboardAvoidingView
 						behavior={Platform.OS === "ios" ? "position" : "height"}
