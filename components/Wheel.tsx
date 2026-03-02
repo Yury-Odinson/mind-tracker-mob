@@ -1,7 +1,15 @@
 import { useMemo, useState } from "react";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, {
+	cancelAnimation,
+	Easing,
+	runOnJS,
+	useAnimatedStyle,
+	useSharedValue,
+	withDecay,
+	withTiming,
+} from "react-native-reanimated";
 import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
 
 type WheelProps = {
@@ -26,6 +34,9 @@ const HALF_SECTOR_ANGLE = SECTOR_ANGLE / 2;
 const FOCUS_AXIS_DEG = -90;
 const AUTO_ALIGN_DURATION_MS = 280;
 const SNAP_DURATION_MS = 220;
+const MOMENTUM_DECELERATION = 0.995;
+const MIN_MOMENTUM_SPEED_DEG = 12;
+const MIN_MOMENTUM_RADIUS_PX = 24;
 const LABEL_FONT_SIZES = [18, 20, 22] as const;
 
 const SECTORS: SectorDefinition[] = [
@@ -287,6 +298,8 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 	const panGesture = Gesture.Pan()
 		.minDistance(6)
 		.onBegin((event) => {
+			cancelAnimation(rotationDeg);
+
 			const angle = Math.atan2(event.y - centerYGlobal, event.x - centerXGlobal);
 			gestureStartAngle.value = angle;
 			gestureStartRotation.value = rotationDeg.value;
@@ -300,12 +313,44 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 
 			rotationDeg.value = gestureStartRotation.value + (delta * 180) / Math.PI;
 		})
-		.onEnd(() => {
-			const snapped = Math.round(rotationDeg.value / SNAP_STEP_DEG) * SNAP_STEP_DEG;
-			rotationDeg.value = withTiming(snapped, {
-				duration: SNAP_DURATION_MS,
-				easing: Easing.out(Easing.cubic),
-			});
+		.onEnd((event) => {
+			const snapToStep = () => {
+				"worklet";
+				const snapped = Math.round(rotationDeg.value / SNAP_STEP_DEG) * SNAP_STEP_DEG;
+				rotationDeg.value = withTiming(snapped, {
+					duration: SNAP_DURATION_MS,
+					easing: Easing.out(Easing.cubic),
+				});
+			};
+
+			const dx = event.x - centerXGlobal;
+			const dy = event.y - centerYGlobal;
+			const radiusSq = dx * dx + dy * dy;
+
+			if (radiusSq < MIN_MOMENTUM_RADIUS_PX * MIN_MOMENTUM_RADIUS_PX) {
+				snapToStep();
+				return;
+			}
+
+			const angularVelocityRad = (dx * event.velocityY - dy * event.velocityX) / radiusSq;
+			const angularVelocityDeg = (angularVelocityRad * 180) / Math.PI;
+
+			if (Math.abs(angularVelocityDeg) < MIN_MOMENTUM_SPEED_DEG) {
+				snapToStep();
+				return;
+			}
+
+			rotationDeg.value = withDecay(
+				{
+					velocity: angularVelocityDeg,
+					deceleration: MOMENTUM_DECELERATION,
+				},
+				(finished) => {
+					if (finished) {
+						snapToStep();
+					}
+				},
+			);
 		});
 
 	const tapGesture = Gesture.Tap().onEnd((event, success) => {
