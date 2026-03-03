@@ -1,3 +1,5 @@
+import { apiImportMoods } from "@/api/moods/import";
+import { clearGuestMoods, getGuestMoodImportEntries } from "@/repositories/mood.repository";
 import { apiRegistration } from "@/api/registration";
 import useAuth from "@/store/auth";
 import { LangDTO } from "@/types/DTO";
@@ -24,6 +26,16 @@ function validateRegister({ email, password, confirmPassword }: ValidateRegister
 	}
 
 	return "";
+}
+
+async function importGuestMoodsAfterRegistration(): Promise<void> {
+	const entries = await getGuestMoodImportEntries();
+	if (entries.length === 0) {
+		return;
+	}
+
+	await apiImportMoods(entries);
+	await clearGuestMoods();
 }
 
 export function useRegisterAuth() {
@@ -58,6 +70,15 @@ export function useRegisterAuth() {
 				lang,
 			});
 			await applyToken(accessToken, refreshToken);
+
+			try {
+				await importGuestMoodsAfterRegistration();
+			} catch (importError) {
+				if (__DEV__) {
+					console.warn("[useRegisterAuth] guest mood import failed after registration", importError);
+				}
+			}
+
 			return true;
 		} catch (error) {
 			if (error instanceof Error) {

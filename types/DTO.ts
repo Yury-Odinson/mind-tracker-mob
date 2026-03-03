@@ -68,3 +68,15 @@ export type MoodResponseDTO = {
 	currentPage: number;
 	totalPages: number;
 };
+
+export type MoodImportEntryDTO = {
+	clientEntryId: string;
+	moodId: number;
+	note: string;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type MoodImportRequestDTO = {
+	entries: MoodImportEntryDTO[];
+};

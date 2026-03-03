@@ -19,7 +19,7 @@ export default function ProfileScreen() {
 	} = useMoodAdd();
 
 	const me = useMe((state) => state.data);
-	const name = me?.name ?? "user";
+	const name = me?.name ?? "Гость";
 
 	const isMeLoading = useMe((state) => state.isLoading);
 	const textColor = useThemeColor({}, "text");

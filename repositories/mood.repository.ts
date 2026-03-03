@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 
 import { getMoodById, getMoodByName } from "@/constants/moods";
 import useAuth from "@/store/auth";
-import { CreateMoodRequestDTO, GetMoodRequestDTO, MoodResponseDTO, UserMoodDTO } from "@/types/DTO";
+import { CreateMoodRequestDTO, GetMoodRequestDTO, MoodImportEntryDTO, MoodResponseDTO, UserMoodDTO } from "@/types/DTO";
 
 import { apiCreateMood } from "@/api/moods/create";
 import { apiGetMood } from "@/api/moods/get";
@@ -30,14 +30,6 @@ type StoredUserMoodV1 = {
 };
 
 type CreateMoodRepositoryInput = CreateMoodRequestDTO;
-
-export type GuestMoodImportEntryDTO = {
-	clientEntryId: string;
-	moodId: number;
-	note: string;
-	createdAt: string;
-	updatedAt: string;
-};
 
 function isStoredUserMoodV2(value: unknown): value is StoredUserMoodV2 {
 	if (typeof value !== "object" || value === null) {
@@ -170,6 +162,22 @@ async function writeGuestMoodsStorage(value: string): Promise<void> {
 	}
 }
 
+async function clearGuestMoodsStorage(): Promise<void> {
+	if (Platform.OS === "web") {
+		if (typeof window === "undefined" || !window.localStorage) {
+			return;
+		}
+
+		window.localStorage.removeItem(GUEST_MOODS_KEY);
+		return;
+	}
+
+	await Promise.allSettled([
+		AsyncStorage.removeItem(GUEST_MOODS_KEY),
+		SecureStore.deleteItemAsync(GUEST_MOODS_KEY),
+	]);
+}
+
 async function getGuestMoods(): Promise<UserMoodDTO[]> {
 	try {
 		const rawData = await readGuestMoodsStorage();
@@ -290,7 +298,7 @@ export async function getMood(input: GetMoodRequestDTO): Promise<MoodResponseDTO
 	return getGuestMoodList(input);
 }
 
-export async function getGuestMoodImportEntries(): Promise<GuestMoodImportEntryDTO[]> {
+export async function getGuestMoodImportEntries(): Promise<MoodImportEntryDTO[]> {
 	const guestMoods = await getGuestMoods();
 	return guestMoods.map((item) => ({
 		clientEntryId: item.clientEntryId,
@@ -299,4 +307,8 @@ export async function getGuestMoodImportEntries(): Promise<GuestMoodImportEntryD
 		createdAt: item.createdAt.toISOString(),
 		updatedAt: item.updatedAt.toISOString(),
 	}));
+}
+
+export async function clearGuestMoods(): Promise<void> {
+	await clearGuestMoodsStorage();
 }
