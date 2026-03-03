@@ -1,10 +1,9 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import useAuth from "@/store/auth";
-import { Redirect, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import { CircleUserRound, History, Settings } from "lucide-react-native";
 
 export default function GroupLayout() {
-	const isAuthenticated = useAuth((state) => state.isAuthenticated);
 	const isHydrated = useAuth((state) => state.isHydrated);
 	const accentColor = useThemeColor({}, "accent");
 	const secondaryTextColor = useThemeColor({}, "secondaryText");
@@ -14,10 +13,6 @@ export default function GroupLayout() {
 	if (!isHydrated) {
 		return null;
 	}
-
-	if (!isAuthenticated) {
-		return <Redirect href="/(auth)/login" />;
-	};
 
 	return (
 		<Tabs
