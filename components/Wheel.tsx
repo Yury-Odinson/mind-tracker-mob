@@ -1,3 +1,4 @@
+import { MOOD_SECTORS } from "@/constants/moods";
 import { useMemo, useState } from "react";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -16,17 +17,6 @@ type WheelProps = {
 	onMoodSelect: (moodId: number, moodName: string) => void;
 };
 
-type MoodSegment = {
-	id: number;
-	name: string;
-	color: string;
-};
-
-type SectorDefinition = {
-	axisDeg: number;
-	rings: [MoodSegment, MoodSegment, MoodSegment];
-};
-
 const VIEWPORT_HEIGHT = 400;
 const SNAP_STEP_DEG = 45;
 const SECTOR_ANGLE = 45;
@@ -39,73 +29,7 @@ const MIN_MOMENTUM_SPEED_DEG = 12;
 const MIN_MOMENTUM_RADIUS_PX = 24;
 const LABEL_FONT_SIZES = [18, 20, 22] as const;
 
-const SECTORS: SectorDefinition[] = [
-	{
-		axisDeg: -90,
-		rings: [
-			{ id: 17, name: "Экстаз", color: "#FDD835" },
-			{ id: 9, name: "Радость", color: "#FFF176" },
-			{ id: 1, name: "Спокойствие", color: "#FFF9C4" },
-		],
-	},
-	{
-		axisDeg: -45,
-		rings: [
-			{ id: 18, name: "Восхищение", color: "#81C784" },
-			{ id: 10, name: "Доверие", color: "#C8E6C9" },
-			{ id: 2, name: "Признание", color: "#F1F8E9" },
-		],
-	},
-	{
-		axisDeg: 0,
-		rings: [
-			{ id: 19, name: "Ужас", color: "#80CBC4" },
-			{ id: 11, name: "Страх", color: "#B2DFDB" },
-			{ id: 3, name: "Опасение", color: "#E0F2F1" },
-		],
-	},
-	{
-		axisDeg: 45,
-		rings: [
-			{ id: 20, name: "Изумление", color: "#29B6F6" },
-			{ id: 12, name: "Удивление", color: "#4FC3F7" },
-			{ id: 4, name: "Отвлечение", color: "#B3E5FC" },
-		],
-	},
-	{
-		axisDeg: 90,
-		rings: [
-			{ id: 21, name: "Горе", color: "#5C6BC0" },
-			{ id: 13, name: "Печаль", color: "#7986CB" },
-			{ id: 5, name: "Задумчивость", color: "#C5CAE9" },
-		],
-	},
-	{
-		axisDeg: 135,
-		rings: [
-			{ id: 22, name: "Отвращение", color: "#AB47BC" },
-			{ id: 14, name: "Брезгливость", color: "#BA68C8" },
-			{ id: 6, name: "Скука", color: "#F8BBD0" },
-		],
-	},
-	{
-		axisDeg: 180,
-		rings: [
-			{ id: 23, name: "Ярость", color: "#C62828" },
-			{ id: 15, name: "Гнев", color: "#E57373" },
-			{ id: 7, name: "Раздражение", color: "#EF9A9A" },
-		],
-	},
-	{
-		axisDeg: -135,
-		rings: [
-			{ id: 24, name: "Бдительность", color: "#FB8C00" },
-			{ id: 16, name: "Ожидание", color: "#FFB74D" },
-			{ id: 8, name: "Интерес", color: "#FFE0B2" },
-		],
-	},
-];
-const SECTOR_START_OFFSET_DEG = SECTORS[0].axisDeg - HALF_SECTOR_ANGLE;
+const SECTOR_START_OFFSET_DEG = MOOD_SECTORS[0].axisDeg - HALF_SECTOR_ANGLE;
 
 type Point = {
 	x: number;
@@ -213,7 +137,7 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 			return [];
 		}
 
-		return SECTORS.flatMap((sector, sectorIndex) => {
+		return MOOD_SECTORS.flatMap((sector, sectorIndex) => {
 			const startDeg = sector.axisDeg - HALF_SECTOR_ANGLE;
 			const endDeg = sector.axisDeg + HALF_SECTOR_ANGLE;
 
@@ -278,8 +202,8 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 		const absoluteAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
 		const wheelAngle = normalizeDeg(absoluteAngle - currentRotationDeg);
 		const sectorIndex =
-			Math.floor(normalizeDeg(wheelAngle - SECTOR_START_OFFSET_DEG) / SECTOR_ANGLE) % SECTORS.length;
-		const selectedSector = SECTORS[sectorIndex];
+			Math.floor(normalizeDeg(wheelAngle - SECTOR_START_OFFSET_DEG) / SECTOR_ANGLE) % MOOD_SECTORS.length;
+		const selectedSector = MOOD_SECTORS[sectorIndex];
 		const selected = selectedSector.rings[ringIndex];
 
 		onMoodSelect(selected.id, selected.name);

@@ -1,4 +1,4 @@
-import { apiCreateMood } from "@/api/moods/create";
+import { createMood } from "@/repositories/mood.repository";
 import { useCallback, useState } from "react";
 
 type MoodSendResult = {
@@ -29,6 +29,14 @@ function mapStatusToMessage(status: number | null): string {
 	return "Не удалось записать эмоцию.";
 }
 
+function mapUnknownErrorToMessage(error: unknown): string {
+	if (error instanceof Error && error.message.includes("Guest storage unavailable")) {
+		return "Локальное хранилище недоступно. Перезапустите приложение.";
+	}
+
+	return "Не удалось записать эмоцию.";
+}
+
 export function useMoodAdd() {
 	const [moodId, setMoodId] = useState<number | null>(null);
 	const [moodName, setMoodName] = useState<string>("");
@@ -53,7 +61,7 @@ export function useMoodAdd() {
 		setError("");
 
 		try {
-			const status = await apiCreateMood({
+			const status = await createMood({
 				moodId,
 				note: note.trim(),
 			});
@@ -68,7 +76,7 @@ export function useMoodAdd() {
 			return { isSuccess: true, message };
 		} catch (error) {
 			const status = extractStatus(error);
-			const message = mapStatusToMessage(status);
+			const message = status === null ? mapUnknownErrorToMessage(error) : mapStatusToMessage(status);
 			setError(message);
 			return { isSuccess: false, message };
 		} finally {

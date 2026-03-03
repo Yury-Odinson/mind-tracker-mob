@@ -4,6 +4,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import useAuth from '@/store/auth';
 import useMe from '@/store/me';
 import useHandleTheme from '@/store/theme';
+import { Link } from 'expo-router';
 import { Moon, Sun } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Switch, TextInput, View } from 'react-native';
@@ -15,6 +16,7 @@ export default function SettingsScreen() {
 	const theme = useHandleTheme((state) => state.theme);
 	const toggleTheme = useHandleTheme((state) => state.toggle);
 
+	const userStatus = useAuth((state) => state.status);
 	const me = useMe((state) => state.data);
 
 	const [name, setName] = useState<string>("");
@@ -60,7 +62,8 @@ export default function SettingsScreen() {
 	};
 
 	const textColor = useThemeColor({}, "text");
-	const secondaryTextColor = useThemeColor({}, "secondaryText");
+	const accentColor = useThemeColor({}, "accent");
+	const borderStyle = useThemeColor({}, "border");
 	const borderColor = useThemeColor({}, "border");
 	const inputBgColor = useThemeColor({}, "inputBg");
 	const warningColor = useThemeColor({}, "warning");
@@ -68,7 +71,6 @@ export default function SettingsScreen() {
 	const isLightTheme = theme === "light" ? true : false;
 
 	const themeIcon = () => {
-
 		if (isLightTheme) {
 			return <Moon fill={"#c2c5cc"} stroke={"#c2c5cc"} />;
 		} else {
@@ -76,71 +78,100 @@ export default function SettingsScreen() {
 		}
 	}
 
+	const userAction = () => {
+		if (userStatus !== "auth") {
+			return (
+				<View style={[{ borderTopColor: borderStyle }, authStyles.assistant]}>
+					<Link href={"/(auth)/login"}
+						style={[{
+							color: accentColor,
+							borderBottomColor: accentColor
+						}, authStyles.link]}
+					>Авторизоваться</Link>
+				</View>
+			);
+		} else {
+			return (
+				<AppButton
+					title={"Выйти из аккаунта"}
+					onPress={logOut}
+					style={{
+						marginTop: "auto",
+						backgroundColor: warningColor
+					}}
+				/>
+			);
+		};
+	};
+
 	return (
 		<View style={styles.container}>
 
 			<AppText variant={"title"} weight={"bold"}>Настройки</AppText>
 
-			<View>
-				<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Аккаунт</AppText>
+			{
+				userStatus === "auth" &&
+				<View>
+					<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Аккаунт</AppText>
 
-				<View style={[{ borderColor: borderColor, backgroundColor: inputBgColor }, styles.item]}>
+					<View style={[{ borderColor: borderColor, backgroundColor: inputBgColor }, styles.item]}>
 
-					<View style={styles.inputLabel}>
-						{name !== "" &&
-							<AppText variant={"placeholder"}>Имя</AppText>
-						}
-						<TextInput
-							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
-							placeholder="Ваше имя"
-							value={name}
-							onChangeText={handleNameChange}
-							autoCapitalize="none"
-						/>
-					</View>
+						<View style={styles.inputLabel}>
+							{name !== "" &&
+								<AppText variant={"placeholder"}>Имя</AppText>
+							}
+							<TextInput
+								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
+								placeholder="Ваше имя"
+								value={name}
+								onChangeText={handleNameChange}
+								autoCapitalize="none"
+							/>
+						</View>
 
-					<View style={styles.inputLabel}>
-						{email !== "" &&
-							<AppText variant={"placeholder"}>Email</AppText>
-						}
-						<TextInput
-							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
-							placeholder="E-mail"
-							value={email}
-							onChangeText={handleEmailChange}
-							keyboardType="email-address"
-							autoCapitalize="none"
-						/>
-					</View>
+						<View style={styles.inputLabel}>
+							{email !== "" &&
+								<AppText variant={"placeholder"}>Email</AppText>
+							}
+							<TextInput
+								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
+								placeholder="E-mail"
+								value={email}
+								onChangeText={handleEmailChange}
+								keyboardType="email-address"
+								autoCapitalize="none"
+							/>
+						</View>
 
-					<View style={styles.inputLabel}>
-						{password !== "" &&
-							<AppText variant={"placeholder"}>Пароль</AppText>
-						}
-						<TextInput
-							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
-							placeholder="Пароль"
-							value={password}
-							onChangeText={handlePasswordChange}
-							secureTextEntry
-						/>
-					</View>
+						<View style={styles.inputLabel}>
+							{password !== "" &&
+								<AppText variant={"placeholder"}>Пароль</AppText>
+							}
+							<TextInput
+								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
+								placeholder="Пароль"
+								value={password}
+								onChangeText={handlePasswordChange}
+								secureTextEntry
+							/>
+						</View>
 
-					<View style={styles.inputLabel}>
-						{confirmPassword !== "" &&
-							<AppText variant={"placeholder"}>Повторите пароль</AppText>
-						}
-						<TextInput
-							style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
-							placeholder="Повторите пароль"
-							value={confirmPassword}
-							onChangeText={handleConfirmPasswordChange}
-							secureTextEntry
-						/>
+						<View style={styles.inputLabel}>
+							{confirmPassword !== "" &&
+								<AppText variant={"placeholder"}>Повторите пароль</AppText>
+							}
+							<TextInput
+								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderColor }, authStyles.input]}
+								placeholder="Повторите пароль"
+								value={confirmPassword}
+								onChangeText={handleConfirmPasswordChange}
+								secureTextEntry
+							/>
+						</View>
 					</View>
 				</View>
-			</View>
 
+			}
 			<View>
 				<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Внешний вид</AppText>
 
@@ -154,14 +185,8 @@ export default function SettingsScreen() {
 				</View>
 			</View>
 
-			<AppButton
-				title={"Выйти из аккаунта"}
-				onPress={logOut}
-				style={{
-					marginTop: "auto",
-					backgroundColor: warningColor
-				}}
-			/>
+			{userAction()}
+
 		</View>
 	);
 };

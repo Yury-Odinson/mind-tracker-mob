@@ -45,11 +45,11 @@ export type MoodDTO = {
 };
 
 export type UserMoodDTO = {
-	id: string;
-	moodName: string;
+	clientEntryId: string;
+	moodId: number;
 	note: string;
-	created_at: Date;
-	updated_at: Date;
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 export type CreateMoodRequestDTO = {
