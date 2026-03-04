@@ -30,6 +30,29 @@ export type MeResponseDTO = {
 	lang: LangDTO;
 };
 
+export type UpdateMeFieldDTO = "name" | "email" | "password";
+
+export type UpdateMeFieldRequestDTO = {
+	field: UpdateMeFieldDTO;
+	currentValue: string;
+	newValue: string;
+};
+
+export type ChangeUserNameRequestDTO = {
+	name: string;
+	newName: string;
+};
+
+export type ChangeUserEmailRequestDTO = {
+	email: string;
+	newEmail: string;
+};
+
+export type ChangeUserPasswordRequestDTO = {
+	password: string;
+	newPassword: string;
+};
+
 export type RefreshResponseDTO = {
 	accessToken: string;
 	refreshToken: string;
@@ -42,6 +65,14 @@ export type MoodDTO = {
 	color: string;
 	note: string;
 	createdAt: string;
+};
+
+export type UserMoodDTO = {
+	clientEntryId: string;
+	moodId: number;
+	note: string;
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 export type CreateMoodRequestDTO = {
@@ -59,4 +90,16 @@ export type MoodResponseDTO = {
 	total: number;
 	currentPage: number;
 	totalPages: number;
+};
+
+export type MoodImportEntryDTO = {
+	clientEntryId: string;
+	moodId: number;
+	note: string;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type MoodImportRequestDTO = {
+	entries: MoodImportEntryDTO[];
 };

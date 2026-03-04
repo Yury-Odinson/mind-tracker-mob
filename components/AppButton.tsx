@@ -1,16 +1,18 @@
 import { Colors } from "@/constants/theme";
 import useHandleTheme from "@/store/theme";
 import React from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from "react-native";
+import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 type AppButtonProps = {
-	title: string;
+	title?: string;
 	onPress: () => void;
 	disabled?: boolean;
 	loading?: boolean;
 	variant?: "primary" | "secondary";
 	fullWidth?: boolean;
-	style?: ViewStyle;
+	style?: StyleProp<ViewStyle>;
+	leftIcon?: React.ReactNode;
+	icon?: React.ReactNode;
 };
 
 export default function AppButton({
@@ -21,11 +23,13 @@ export default function AppButton({
 	variant = "primary",
 	fullWidth = true,
 	style,
+	icon,
 }: AppButtonProps) {
 	const isBlocked = disabled || loading;
 
 	const theme = useHandleTheme((state) => state.theme);
 	const palette = Colors[theme].button[variant];
+	const textColor = isBlocked ? palette.disabledText : palette.text;
 
 	return (
 		<Pressable
@@ -45,11 +49,12 @@ export default function AppButton({
 			]}
 		>
 			{loading ? (
-				<ActivityIndicator color={isBlocked ? palette.disabledText : palette.text} />
+				<ActivityIndicator color={textColor} />
 			) : (
-				<Text style={[styles.text, { color: isBlocked ? palette.disabledText : palette.text }]}>
-					{title}
-				</Text>
+				<View style={styles.content}>
+					{title && <Text style={[styles.text, { color: textColor }]}>{title}</Text>}
+					{icon ? <View style={styles.icon}>{icon}</View> : null}
+				</View>
 			)}
 		</Pressable>
 	);
@@ -58,10 +63,20 @@ export default function AppButton({
 const styles = StyleSheet.create({
 	base: {
 		minHeight: 48,
-		borderRadius: 8,
+		borderRadius: 18,
 		alignItems: "center",
 		justifyContent: "center",
 		paddingHorizontal: 16,
+	},
+	content: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 8,
+	},
+	icon: {
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	primary: {
 		backgroundColor: "#333",

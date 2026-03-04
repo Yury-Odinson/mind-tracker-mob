@@ -1,4 +1,4 @@
-import { apiGetMood } from "@/api/moods/get";
+import { getMood } from "@/repositories/mood.repository";
 import { MoodDTO } from "@/types/DTO";
 import { useCallback, useRef, useState } from "react";
 
@@ -21,7 +21,7 @@ export function useMoodList() {
 		setPage(targetPage);
 
 		try {
-			const response = await apiGetMood({
+			const response = await getMood({
 				page: targetPage,
 				limit,
 			});

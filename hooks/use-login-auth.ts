@@ -1,4 +1,6 @@
+import { apiImportMoods } from "@/api/moods/import";
 import { apiAuth } from "@/api/auth";
+import { clearGuestMoods, getGuestMoodImportEntries } from "@/repositories/mood.repository";
 import useAuth from "@/store/auth";
 import { useCallback, useState } from "react";
 
@@ -36,6 +38,16 @@ function toUserLoginError(error: unknown): string {
 
 }
 
+async function importGuestMoodsAfterLogin(): Promise<void> {
+	const entries = await getGuestMoodImportEntries();
+	if (entries.length === 0) {
+		return;
+	}
+
+	await apiImportMoods(entries);
+	await clearGuestMoods();
+}
+
 export function useLoginAuth() {
 	const [email, setEmail] = useState("we");
 	const [password, setPassword] = useState("we");
@@ -59,6 +71,15 @@ export function useLoginAuth() {
 		try {
 			const { accessToken, refreshToken } = await apiAuth({ email: normalizedEmail, password });
 			await applyToken(accessToken, refreshToken);
+
+			try {
+				await importGuestMoodsAfterLogin();
+			} catch (importError) {
+				if (__DEV__) {
+					console.warn("[useLoginAuth] guest mood import failed after login", importError);
+				}
+			}
+
 			return true;
 		} catch (error) {
 			setError(toUserLoginError(error));

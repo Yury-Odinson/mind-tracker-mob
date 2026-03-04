@@ -1,26 +1,37 @@
 import { Colors } from "@/constants/theme";
 import useAuth from "@/store/auth";
 import useMe from "@/store/me";
+import useOnboarding from "@/store/onboarding";
 import useHandleTheme from "@/store/theme";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
 	const hydrateSession = useAuth((state) => state.hydrateSession);
 	const isAuthenticated = useAuth((state) => state.isAuthenticated);
-	const isHydrated = useAuth((state) => state.isHydrated);
+	const isAuthHydrated = useAuth((state) => state.isHydrated);
+	const hydrateOnboarding = useOnboarding((state) => state.hydrateOnboarding);
+	const isOnboardingHydrated = useOnboarding((state) => state.isHydrated);
+	const isOnboardingCompleted = useOnboarding((state) => state.isCompleted);
 	const fetchMe = useMe((state) => state.fetchMe);
 	const clearMe = useMe((state) => state.clearMe);
 
 	useEffect(() => {
 		void hydrateSession();
-	}, [hydrateSession]);
+		void hydrateOnboarding();
+	}, [hydrateOnboarding, hydrateSession]);
 
 	useEffect(() => {
-		if (!isHydrated) {
+		if (!isAuthHydrated || !isOnboardingHydrated) {
+			return;
+		}
+
+		if (!isOnboardingCompleted) {
+			router.replace("/(onboarding)");
 			return;
 		}
 
@@ -29,8 +40,10 @@ export default function RootLayout() {
 			return;
 		}
 
-		clearMe();
-	}, [clearMe, fetchMe, isAuthenticated, isHydrated]);
+		router.push("/(app)/profile");
+
+			clearMe();
+	}, [clearMe, fetchMe, isAuthenticated, isAuthHydrated, isOnboardingCompleted, isOnboardingHydrated]);
 
 	const lightAppTheme = {
 		...DefaultTheme,
@@ -55,14 +68,16 @@ export default function RootLayout() {
 	const backgroundColor = Colors[theme].background;
 
 	return (
-		<ThemeProvider value={appTheme}>
-			<SafeAreaProvider>
-				<SafeAreaView style={[styles.container, { backgroundColor }]} edges={["top"]}>
-					<StatusBar />
-					<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
-				</SafeAreaView>
-			</SafeAreaProvider>
-		</ThemeProvider>
+		<GestureHandlerRootView style={styles.container}>
+			<ThemeProvider value={appTheme}>
+				<SafeAreaProvider>
+					<SafeAreaView style={[styles.container, { backgroundColor }]} edges={["top"]}>
+						<StatusBar />
+						<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
+					</SafeAreaView>
+				</SafeAreaProvider>
+			</ThemeProvider>
+		</GestureHandlerRootView>
 	);
 };
 

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 		position: "relative",
 		marginVertical: 6,
 		borderWidth: 1,
-		borderRadius: 8,
+		borderRadius: 18,
 		overflow: "hidden",
 	},
 	color: {
@@ -40,11 +40,11 @@ const styles = StyleSheet.create({
 		left: 0,
 		top: 0,
 		bottom: 0,
-		width: 10,
+		width: 16,
 	},
 	content: {
 		padding: 12,
-		paddingLeft: 22,
+		paddingLeft: 36,
 		gap: 4,
 	},
 	date: {

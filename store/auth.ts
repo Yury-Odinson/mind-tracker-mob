@@ -67,7 +67,7 @@ async function deleteStoredToken(): Promise<void> {
 	await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
 }
 
-type AuthStatus = "idle" | "loading" | "auth";
+type AuthStatus = "loading" | "guest" | "auth";
 
 type AuthState = {
 	status: AuthStatus;
@@ -82,7 +82,7 @@ type AuthState = {
 };
 
 const useAuth = create<AuthState>((set) => ({
-	status: "idle",
+	status: "guest",
 	accessToken: null,
 	refreshToken: null,
 	isAuthenticated: false,
@@ -108,7 +108,7 @@ const useAuth = create<AuthState>((set) => ({
 				accessToken: null,
 				refreshToken: null,
 				isAuthenticated: false,
-				status: "idle",
+				status: "guest",
 				isHydrated: true,
 			});
 		} catch {
@@ -116,7 +116,7 @@ const useAuth = create<AuthState>((set) => ({
 				accessToken: null,
 				refreshToken: null,
 				isAuthenticated: false,
-				status: "idle",
+				status: "guest",
 				isHydrated: true,
 			});
 		}
@@ -139,7 +139,7 @@ const useAuth = create<AuthState>((set) => ({
 			accessToken: null,
 			refreshToken: null,
 			isAuthenticated: false,
-			status: "idle",
+			status: "guest",
 			isHydrated: true,
 		});
 	},
