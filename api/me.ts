@@ -17,3 +17,4 @@ export async function apiMe(): Promise<MeResponseDTO> {
 		throw error;
 	}
 }
+

@@ -30,6 +30,29 @@ export type MeResponseDTO = {
 	lang: LangDTO;
 };
 
+export type UpdateMeFieldDTO = "name" | "email" | "password";
+
+export type UpdateMeFieldRequestDTO = {
+	field: UpdateMeFieldDTO;
+	currentValue: string;
+	newValue: string;
+};
+
+export type ChangeUserNameRequestDTO = {
+	name: string;
+	newName: string;
+};
+
+export type ChangeUserEmailRequestDTO = {
+	email: string;
+	newEmail: string;
+};
+
+export type ChangeUserPasswordRequestDTO = {
+	password: string;
+	newPassword: string;
+};
+
 export type RefreshResponseDTO = {
 	accessToken: string;
 	refreshToken: string;
