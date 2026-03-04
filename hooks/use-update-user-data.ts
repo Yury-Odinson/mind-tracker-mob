@@ -52,11 +52,12 @@ export function useUpdateUserData() {
 			};
 		}
 
-		const currentValue = field === "name"
-			? (me?.name ?? "").trim()
-			: field === "email"
-				? (me?.email ?? "").trim()
-				: normalizedNewValue;
+		const currentValueByField: Record<UpdateMeFieldDTO, string> = {
+			name: (me?.name ?? "").trim(),
+			email: (me?.email ?? "").trim(),
+			password: normalizedNewValue,
+		};
+		const currentValue = currentValueByField[field];
 
 		if ((field === "name" || field === "email") && !currentValue) {
 			return {
