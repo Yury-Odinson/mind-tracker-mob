@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
 		padding: 8,
 		gap: 16,
 		borderWidth: 1,
-		borderRadius: 16,
+		borderRadius: 18,
 	},
 	appearanceItem: {
 		flexDirection: "row",
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: 40,
 		borderWidth: 1,
-		borderRadius: 8,
+		borderRadius: 12,
 		paddingLeft: 10,
 		paddingRight: 4,
 		flexDirection: "row",
@@ -249,8 +249,6 @@ const styles = StyleSheet.create({
 	inputBtn: {
 		minHeight: 32,
 		width: 32,
-		paddingHorizontal: 0,
-		borderRadius: 8,
 		backgroundColor: "transparent",
 	},
 });

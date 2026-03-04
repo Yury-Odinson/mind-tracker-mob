@@ -1,5 +1,6 @@
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
+import MoodIsland from '@/components/MoodIsland';
 import Wheel from '@/components/Wheel';
 import { useMoodAdd } from '@/hooks/use-mood-add';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -13,6 +14,7 @@ export default function ProfileScreen() {
 		note,
 		setNote,
 		moodName,
+		moodColor,
 		isSend,
 		handleMoodSelect,
 		handleSendMood,
@@ -42,11 +44,12 @@ export default function ProfileScreen() {
 
 				<View style={styles.profile}>
 
-					<AppText variant={"title"} weight={"bold"}>{isMeLoading ? `Привет!` : `Привет, ${name}!`}</AppText>
+					<View style={{ gap: 16 }}>
+						<AppText variant={"title"} weight={"bold"}>{isMeLoading ? `Привет!` : `Привет, ${name}!`}</AppText>
+						<AppText variant={"subtitle"}>Что ты сейчас чувствуешь?</AppText>
+					</View>
 
-					<AppText variant={"subtitle"}>Что ты сейчас чувствуешь?</AppText>
-
-					<View style={{ marginHorizontal: -20, maxWidth: 500 }}>
+					<View style={{ marginTop: 20, marginHorizontal: -20, maxWidth: 500 }}>
 						<Wheel onMoodSelect={handleMoodSelect} />
 					</View>
 
@@ -54,10 +57,17 @@ export default function ProfileScreen() {
 						behavior={Platform.OS === "ios" ? "position" : "height"}
 						keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
 					>
-						<View style={[{ backgroundColor: backgroundColor, borderColor: borderStyle }, styles.actions]}>
-							<AppText weight={"bold"} style={styles.actionsTitle}>{moodName}</AppText>
+						<View style={[{ backgroundColor: backgroundColor }, styles.actions]}>
+
+							<MoodIsland moodName={moodName} color={moodColor} />
 							<TextInput
-								style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
+								style={[{
+									color: textColor,
+									backgroundColor: inputBgColor,
+									borderColor: borderStyle,
+									borderRadius: 16
+
+								}, authStyles.input]}
 								placeholder="Добавьте заметку... (по желанию)"
 								readOnly={!moodId}
 								value={note}
@@ -88,23 +98,11 @@ const styles = StyleSheet.create({
 	},
 	profile: {
 		flex: 1,
-		gap: 16,
-	},
-	title: {
-		fontSize: 24,
-		fontWeight: 600
+		justifyContent: "space-between"
 	},
 	actions: {
-		padding: 20,
+		marginTop: 44,
+		paddingHorizontal: 20,
 		gap: 16,
-		borderRadius: 8,
-		borderWidth: 1
 	},
-	actionsTitle: {
-		height: 36,
-		fontSize: 24,
-		fontWeight: 600,
-		textTransform: "uppercase",
-		textAlign: "center"
-	}
 });

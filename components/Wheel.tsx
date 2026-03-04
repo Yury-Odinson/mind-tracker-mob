@@ -14,7 +14,7 @@ import Animated, {
 import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
 
 type WheelProps = {
-	onMoodSelect: (moodId: number, moodName: string) => void;
+	onMoodSelect: (moodId: number, moodName: string, moodColor: string) => void;
 };
 
 const VIEWPORT_HEIGHT = 400;
@@ -206,7 +206,7 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 		const selectedSector = MOOD_SECTORS[sectorIndex];
 		const selected = selectedSector.rings[ringIndex];
 
-		onMoodSelect(selected.id, selected.name);
+		onMoodSelect(selected.id, selected.name, selected.color);
 
 		const targetRotation = closestTurnAngle(
 			FOCUS_AXIS_DEG - selectedSector.axisDeg,

@@ -40,13 +40,15 @@ function mapUnknownErrorToMessage(error: unknown): string {
 export function useMoodAdd() {
 	const [moodId, setMoodId] = useState<number | null>(null);
 	const [moodName, setMoodName] = useState<string>("");
+	const [moodColor, setMoodColor] = useState<string>("");
 	const [note, setNote] = useState<string>("");
 	const [isSend, setIsSend] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
 
-	const handleMoodSelect = useCallback((selectedMoodId: number, selectedMoodName: string) => {
+	const handleMoodSelect = useCallback((selectedMoodId: number, selectedMoodName: string, selectedMoodColor: string) => {
 		setMoodId(selectedMoodId);
 		setMoodName(selectedMoodName);
+		setMoodColor(selectedMoodColor);
 		setError("");
 	}, []);
 
@@ -72,6 +74,7 @@ export function useMoodAdd() {
 
 			setMoodId(null);
 			setMoodName("");
+			setMoodColor("");
 			setNote("");
 			return { isSuccess: true, message };
 		} catch (error) {
@@ -89,6 +92,7 @@ export function useMoodAdd() {
 		note,
 		setNote,
 		moodName,
+		moodColor,
 		isSend,
 		error,
 		handleMoodSelect,
