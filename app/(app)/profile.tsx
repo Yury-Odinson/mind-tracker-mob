@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
 	},
 	actions: {
 		marginTop: 44,
-		paddingHorizontal: 20,
+		padding: 20,
 		gap: 16,
+		borderRadius: 30
 	},
 });
