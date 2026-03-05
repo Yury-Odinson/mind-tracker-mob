@@ -30,9 +30,9 @@ export default function GroupLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="history"
+				name="diary"
 				options={{
-					title: "История",
+					title: "Дневник",
 					tabBarIcon: ({ color, size }) => <History color={color} size={size} />,
 				}}
 			/>

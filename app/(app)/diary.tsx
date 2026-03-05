@@ -8,7 +8,7 @@ import { MoveLeft, MoveRight } from 'lucide-react-native';
 import { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-export default function HistoryScreen() {
+export default function DiaryScreen() {
 
 	const { moods, page, totalPages, isLoading, loadMoods } = useMoodList();
 
@@ -86,7 +86,7 @@ export default function HistoryScreen() {
 	return (
 		<>
 			<View style={styles.container}>
-				<AppText variant={"title"} weight={"bold"}>История</AppText>
+				<AppText variant={"title"} weight={"bold"}>Дневник</AppText>
 
 				<ScrollView>
 					{moods && moods.map(e => (
