@@ -4,10 +4,20 @@ import { Platform } from "react-native";
 
 import { getMoodById, getMoodByName } from "@/constants/moods";
 import useAuth from "@/store/auth";
-import { CreateMoodRequestDTO, GetMoodRequestDTO, MoodImportEntryDTO, MoodResponseDTO, UserMoodDTO } from "@/types/DTO";
+import {
+	CreateMoodRequestDTO,
+	DeleteMoodRequestDTO,
+	GetMoodRequestDTO,
+	MoodImportEntryDTO,
+	MoodResponseDTO,
+	UpdateMoodRequestDTO,
+	UserMoodDTO,
+} from "@/types/DTO";
 
 import { apiCreateMood } from "@/api/moods/create";
+import { apiDeleteMood } from "@/api/moods/delete";
 import { apiGetMood } from "@/api/moods/get";
+import { apiUpdateMood } from "@/api/moods/update";
 
 const GUEST_MOODS_KEY = "guest_moods_v1";
 const DEFAULT_GUEST_MOOD_COLOR = "#94A3B8";
@@ -30,6 +40,15 @@ type StoredUserMoodV1 = {
 };
 
 type CreateMoodRepositoryInput = CreateMoodRequestDTO;
+type UpdateMoodRepositoryInput = UpdateMoodRequestDTO;
+type DeleteMoodRepositoryInput = DeleteMoodRequestDTO;
+type RepositoryRequestError = Error & { status?: number };
+
+function createRepositoryRequestError(message: string, status: number): RepositoryRequestError {
+	const error = new Error(message) as RepositoryRequestError;
+	error.status = status;
+	return error;
+}
 
 function isStoredUserMoodV2(value: unknown): value is StoredUserMoodV2 {
 	if (typeof value !== "object" || value === null) {
@@ -247,6 +266,60 @@ async function createGuestMood(input: CreateMoodRepositoryInput): Promise<number
 	return 200;
 }
 
+function getGuestMoodIndexByEntryId(entryId: number, total: number): number {
+	if (!Number.isInteger(entryId) || entryId <= 0) {
+		return -1;
+	}
+
+	const index = entryId - 1;
+	if (index >= total) {
+		return -1;
+	}
+
+	return index;
+}
+
+async function updateGuestMood({ entryId, moodId, note }: UpdateMoodRepositoryInput): Promise<number> {
+	const currentMoods = await getGuestMoods();
+	const targetIndex = getGuestMoodIndexByEntryId(entryId, currentMoods.length);
+
+	if (targetIndex < 0) {
+		throw createRepositoryRequestError(`PATCH /api/mood/${entryId} failed: 404`, 404);
+	}
+
+	const targetMood = currentMoods[targetIndex];
+	const nextMoodId = typeof moodId === "number" ? moodId : targetMood.moodId;
+	const nextNote = typeof note === "string" ? note.trim() : targetMood.note;
+
+	if (!Number.isInteger(nextMoodId) || nextMoodId <= 0) {
+		throw new Error("Mood id is required for guest mood");
+	}
+
+	const nextMoods = [...currentMoods];
+	nextMoods[targetIndex] = {
+		...targetMood,
+		moodId: nextMoodId,
+		note: nextNote,
+		updatedAt: new Date(),
+	};
+
+	await saveGuestMoods(nextMoods);
+	return 200;
+}
+
+async function deleteGuestMood({ entryId }: DeleteMoodRepositoryInput): Promise<number> {
+	const currentMoods = await getGuestMoods();
+	const targetIndex = getGuestMoodIndexByEntryId(entryId, currentMoods.length);
+
+	if (targetIndex < 0) {
+		throw createRepositoryRequestError(`DELETE /api/mood/${entryId} failed: 404`, 404);
+	}
+
+	const nextMoods = currentMoods.filter((_, index) => index !== targetIndex);
+	await saveGuestMoods(nextMoods);
+	return 200;
+}
+
 async function getGuestMoodList({ page = 1, limit = 20 }: GetMoodRequestDTO): Promise<MoodResponseDTO> {
 	const moods = await getGuestMoods();
 	const safeLimit = limit > 0 ? limit : 20;
@@ -296,6 +369,28 @@ export async function getMood(input: GetMoodRequestDTO): Promise<MoodResponseDTO
 	}
 
 	return getGuestMoodList(input);
+}
+
+export async function updateMood(input: UpdateMoodRepositoryInput): Promise<number> {
+	const sanitizedInput: UpdateMoodRepositoryInput = {
+		entryId: input.entryId,
+		...(typeof input.moodId === "number" ? { moodId: input.moodId } : {}),
+		...(typeof input.note === "string" ? { note: input.note.trim() } : {}),
+	};
+
+	if (isAuthSession()) {
+		return apiUpdateMood(sanitizedInput);
+	}
+
+	return updateGuestMood(sanitizedInput);
+}
+
+export async function deleteMood(input: DeleteMoodRepositoryInput): Promise<number> {
+	if (isAuthSession()) {
+		return apiDeleteMood(input);
+	}
+
+	return deleteGuestMood(input);
 }
 
 export async function getGuestMoodImportEntries(): Promise<MoodImportEntryDTO[]> {

@@ -80,6 +80,16 @@ export type CreateMoodRequestDTO = {
 	note: string;
 };
 
+export type UpdateMoodRequestDTO = {
+	entryId: number;
+	moodId?: number;
+	note?: string;
+};
+
+export type DeleteMoodRequestDTO = {
+	entryId: number;
+};
+
 export type GetMoodRequestDTO = {
 	page: number;
 	limit: number;

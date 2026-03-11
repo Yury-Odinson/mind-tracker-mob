@@ -3,10 +3,50 @@ import MoodListItem from '@/components/MoodListItem';
 import { useMoodList } from '@/hooks/use-mood-list';
 import { usePagination } from '@/hooks/use-pagination';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { deleteMood, updateMood } from '@/repositories/mood.repository';
 import { useFocusEffect } from '@react-navigation/native';
 import { MoveLeft, MoveRight } from 'lucide-react-native';
 import { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+type MoodActionResult = {
+	isSuccess: boolean;
+	message: string;
+};
+
+type MoodUpdatePayload = {
+	moodId?: number;
+	note?: string;
+};
+
+type StatusError = Error & { status?: number };
+
+function extractStatus(error: unknown): number | null {
+	if (typeof error === "object" && error !== null && "status" in error) {
+		const status = (error as StatusError).status;
+		return typeof status === "number" ? status : null;
+	}
+
+	return null;
+}
+
+function mapActionError(action: "update" | "delete", status: number | null): string {
+	if (status === 404) {
+		return "Запись не найдена. Обновите список.";
+	}
+
+	if (status === 401) {
+		return "Нужно заново войти в аккаунт.";
+	}
+
+	if (status === 500) {
+		return "Ошибка сервера. Попробуйте позже.";
+	}
+
+	return action === "update"
+		? "Не удалось обновить запись."
+		: "Не удалось удалить запись.";
+}
 
 export default function DiaryScreen() {
 
@@ -30,6 +70,42 @@ export default function DiaryScreen() {
 			void loadMoods();
 		}, [loadMoods]),
 	);
+
+	const handleUpdateMood = useCallback(async (entryId: number, payload: MoodUpdatePayload): Promise<MoodActionResult> => {
+		try {
+			await updateMood({
+				entryId,
+				moodId: payload.moodId,
+				note: payload.note,
+			});
+			await loadMoods(page);
+			return {
+				isSuccess: true,
+				message: "Запись обновлена.",
+			};
+		} catch (error) {
+			return {
+				isSuccess: false,
+				message: mapActionError("update", extractStatus(error)),
+			};
+		}
+	}, [loadMoods, page]);
+
+	const handleDeleteMood = useCallback(async (entryId: number): Promise<MoodActionResult> => {
+		try {
+			await deleteMood({ entryId });
+			await loadMoods(page);
+			return {
+				isSuccess: true,
+				message: "Запись удалена.",
+			};
+		} catch (error) {
+			return {
+				isSuccess: false,
+				message: mapActionError("delete", extractStatus(error)),
+			};
+		}
+	}, [loadMoods, page]);
 
 	const paginationSection = () => {
 		if (!totalPages || totalPages <= 1) return null;
@@ -90,7 +166,17 @@ export default function DiaryScreen() {
 
 				<ScrollView>
 					{moods && moods.map(e => (
-						<MoodListItem key={e.createdAt} moodName={e.moodName} note={e.note} createdAt={e.createdAt} color={e.color} />
+						<MoodListItem
+							key={e.id}
+							id={e.id}
+							moodId={e.moodId}
+							moodName={e.moodName}
+							note={e.note}
+							createdAt={e.createdAt}
+							color={e.color}
+							onUpdate={handleUpdateMood}
+							onDelete={handleDeleteMood}
+						/>
 					))}
 				</ScrollView>
 
