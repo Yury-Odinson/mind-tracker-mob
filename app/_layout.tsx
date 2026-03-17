@@ -1,3 +1,4 @@
+import "../global.css";
 import { Colors } from "@/constants/theme";
 import useAuth from "@/store/auth";
 import useMe from "@/store/me";
