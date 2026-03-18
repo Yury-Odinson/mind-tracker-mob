@@ -3,7 +3,7 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import { MoodDTO } from "@/types/DTO";
 import { formatedDate } from "@/utils/formatedDate";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
 type MoodActionResult = {
 	isSuccess: boolean;
@@ -167,20 +167,24 @@ export default function MoodListItem({
 	};
 
 	return (
-		<View style={[{ backgroundColor: `${activeColor}20`, borderColor }, styles.item]}>
-			<View style={[{ backgroundColor: activeColor }, styles.color]}></View>
-			<View style={styles.content}>
-				<Text style={[{ color: secondaryTextColor }, styles.date]}>{date}</Text>
-				<Text style={[{ color: textColor }, styles.name]}>{isEditing ? selectedMoodName : moodName}</Text>
-				<Text style={[{ color: secondaryTextColor }, styles.note]}>{notePreview}</Text>
+		<View
+			className="relative my-1.5 overflow-hidden rounded-[18px] border"
+			style={{ backgroundColor: `${activeColor}20`, borderColor }}
+		>
+			<View className="absolute bottom-0 left-0 top-0 w-4" style={{ backgroundColor: activeColor }}></View>
+			<View className="gap-2 p-3 pl-9">
+				<Text className="text-xs" style={{ color: secondaryTextColor }}>{date}</Text>
+				<Text className="text-[20px]" style={{ color: textColor }}>{isEditing ? selectedMoodName : moodName}</Text>
+				<Text className="text-base" style={{ color: secondaryTextColor }}>{notePreview}</Text>
 
-				<View style={styles.actions}>
+				<View className="flex-row gap-2.5">
 					<Pressable
 						onPress={isEditing ? cancelEdit : startEdit}
 						disabled={isUpdating || isDeleting}
-						style={[styles.actionBtn, { borderColor }]}
+						className="rounded-[10px] border px-3 py-1.5"
+						style={{ borderColor }}
 					>
-						<Text style={[styles.actionText, { color: accentColor }]}>
+						<Text className="text-sm font-semibold" style={{ color: accentColor }}>
 							{isEditing ? "Отмена" : "Редактировать"}
 						</Text>
 					</Pressable>
@@ -188,18 +192,19 @@ export default function MoodListItem({
 					<Pressable
 						onPress={requestDelete}
 						disabled={isUpdating || isDeleting}
-						style={[styles.actionBtn, { borderColor }]}
+						className="rounded-[10px] border px-3 py-1.5"
+						style={{ borderColor }}
 					>
-						<Text style={[styles.actionText, { color: warningColor }]}>
+						<Text className="text-sm font-semibold" style={{ color: warningColor }}>
 							{isDeleting ? "Удаление..." : "Удалить"}
 						</Text>
 					</Pressable>
 				</View>
 
 				{isEditing ? (
-					<View style={[styles.editor, { borderColor }]}>
-						<Text style={[styles.editorLabel, { color: secondaryTextColor }]}>Эмоция</Text>
-						<View style={styles.moodGrid}>
+					<View className="mt-1 gap-2.5 border-t pt-2.5" style={{ borderColor }}>
+						<Text className="text-[13px] font-semibold" style={{ color: secondaryTextColor }}>Эмоция</Text>
+						<View className="flex-row flex-wrap gap-2">
 							{moodOptions.map((item) => {
 								const isActive = item.id === selectedMoodId;
 								return (
@@ -207,21 +212,15 @@ export default function MoodListItem({
 										key={item.id}
 										onPress={() => handleMoodSelect(item.id, item.name, item.color)}
 										disabled={isUpdating || isDeleting}
-										style={[
-											styles.moodChip,
-											{
-												backgroundColor: isActive ? item.color : "transparent",
-												borderColor: item.color,
-											},
-										]}
+										className="rounded-[10px] border px-2.5 py-1.5"
+										style={{
+											backgroundColor: isActive ? item.color : "transparent",
+											borderColor: item.color,
+										}}
 									>
 										<Text
-											style={[
-												styles.moodChipText,
-												{
-													color: isActive ? textColorByBackground(item.color) : textColor,
-												},
-											]}
+											className="text-[13px] font-semibold"
+											style={{ color: isActive ? textColorByBackground(item.color) : textColor }}
 										>
 											{item.name}
 										</Text>
@@ -230,16 +229,10 @@ export default function MoodListItem({
 							})}
 						</View>
 
-						<Text style={[styles.editorLabel, { color: secondaryTextColor }]}>Заметка</Text>
+						<Text className="text-[13px] font-semibold" style={{ color: secondaryTextColor }}>Заметка</Text>
 						<TextInput
-							style={[
-								styles.input,
-								{
-									color: textColor,
-									borderColor,
-									backgroundColor: inputBgColor,
-								},
-							]}
+							className="min-h-[84px] rounded-xl border px-3 py-2.5 text-[15px]"
+							style={{ color: textColor, borderColor, backgroundColor: inputBgColor }}
 							placeholder="Добавьте заметку..."
 							placeholderTextColor={secondaryTextColor}
 							value={nextNote}
@@ -248,22 +241,24 @@ export default function MoodListItem({
 							textAlignVertical="top"
 						/>
 
-						<View style={styles.editActions}>
+						<View className="flex-row gap-2.5">
 							<Pressable
 								onPress={cancelEdit}
 								disabled={isUpdating}
-								style={[styles.editBtn, { borderColor }]}
+								className="flex-1 items-center justify-center rounded-[10px] border py-2"
+								style={{ borderColor }}
 							>
-								<Text style={[styles.actionText, { color: secondaryTextColor }]}>Отмена</Text>
+								<Text className="text-sm font-semibold" style={{ color: secondaryTextColor }}>Отмена</Text>
 							</Pressable>
 							<Pressable
 								onPress={() => {
 									void handleSave();
 								}}
 								disabled={!isChanged || isUpdating || isDeleting}
-								style={[styles.editBtn, { borderColor }]}
+								className="flex-1 items-center justify-center rounded-[10px] border py-2"
+								style={{ borderColor }}
 							>
-								<Text style={[styles.actionText, { color: accentColor }]}>
+								<Text className="text-sm font-semibold" style={{ color: accentColor }}>
 									{isUpdating ? "Сохранение..." : "Сохранить"}
 								</Text>
 							</Pressable>
@@ -271,101 +266,8 @@ export default function MoodListItem({
 					</View>
 				) : null}
 
-				{error ? <Text style={[styles.error, { color: warningColor }]}>{error}</Text> : null}
+				{error ? <Text className="text-[13px]" style={{ color: warningColor }}>{error}</Text> : null}
 			</View>
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	item: {
-		position: "relative",
-		marginVertical: 6,
-		borderWidth: 1,
-		borderRadius: 18,
-		overflow: "hidden",
-	},
-	color: {
-		position: "absolute",
-		left: 0,
-		top: 0,
-		bottom: 0,
-		width: 16,
-	},
-	content: {
-		padding: 12,
-		paddingLeft: 36,
-		gap: 8,
-	},
-	date: {
-		fontSize: 12,
-	},
-	name: {
-		fontSize: 20,
-	},
-	note: {
-		fontSize: 16,
-	},
-	actions: {
-		flexDirection: "row",
-		gap: 10,
-	},
-	actionBtn: {
-		paddingHorizontal: 12,
-		paddingVertical: 6,
-		borderRadius: 10,
-		borderWidth: 1,
-	},
-	actionText: {
-		fontSize: 14,
-		fontWeight: "600",
-	},
-	editor: {
-		gap: 10,
-		marginTop: 4,
-		paddingTop: 10,
-		borderTopWidth: 1,
-	},
-	editorLabel: {
-		fontSize: 13,
-		fontWeight: "600",
-	},
-	moodGrid: {
-		flexDirection: "row",
-		flexWrap: "wrap",
-		gap: 8,
-	},
-	moodChip: {
-		borderRadius: 10,
-		borderWidth: 1,
-		paddingHorizontal: 10,
-		paddingVertical: 6,
-	},
-	moodChipText: {
-		fontSize: 13,
-		fontWeight: "600",
-	},
-	input: {
-		minHeight: 84,
-		borderWidth: 1,
-		borderRadius: 12,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
-		fontSize: 15,
-	},
-	editActions: {
-		flexDirection: "row",
-		gap: 10,
-	},
-	editBtn: {
-		flex: 1,
-		paddingVertical: 8,
-		alignItems: "center",
-		justifyContent: "center",
-		borderRadius: 10,
-		borderWidth: 1,
-	},
-	error: {
-		fontSize: 13,
-	},
-});

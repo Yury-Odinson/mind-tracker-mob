@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/theme";
 import useHandleTheme from "@/store/theme";
-import React from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 type AppButtonProps = {
@@ -26,25 +26,31 @@ export default function AppButton({
 	icon,
 }: AppButtonProps) {
 	const isBlocked = disabled || loading;
+	const [isPressed, setIsPressed] = useState(false);
 
 	const theme = useHandleTheme((state) => state.theme);
 	const palette = Colors[theme].button[variant];
 	const textColor = isBlocked ? palette.disabledText : palette.text;
+	const backgroundColor = isBlocked
+		? palette.disabledBg
+		: isPressed
+			? palette.pressedBg
+			: palette.bg;
 
 	return (
 		<Pressable
 			onPress={onPress}
 			disabled={isBlocked}
-			style={({ pressed }) => [
+			onPressIn={() => setIsPressed(true)}
+			onPressOut={() => setIsPressed(false)}
+			style={[
 				styles.base,
 				fullWidth && styles.fullWidth,
 				{
-					backgroundColor: isBlocked
-						? palette.disabledBg
-						: pressed
-							? palette.pressedBg
-							: palette.bg,
+					backgroundColor,
 				},
+				isPressed && !isBlocked && styles.pressed,
+				isBlocked && styles.disabled,
 				style,
 			]}
 		>

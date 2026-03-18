@@ -1,6 +1,6 @@
 import AppText from "@/components/AppText";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { KeyboardTypeOptions, Modal as NativeModal, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { KeyboardTypeOptions, Modal as NativeModal, Pressable, TextInput, View } from "react-native";
 import AppButton from "./AppButton";
 
 type AppModalProps = {
@@ -39,14 +39,18 @@ export default function AppModal({
 
 	return (
 		<NativeModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-			<View style={styles.overlay}>
-				<Pressable style={styles.backdrop} onPress={isSubmitting ? undefined : onClose} />
+			<View className="flex-1 justify-center px-5">
+				<Pressable className="absolute inset-0 bg-black/45" onPress={isSubmitting ? undefined : onClose} />
 
-				<View style={[styles.container, { backgroundColor: surfaceColor, borderColor }]}>
+				<View
+					className="w-full max-w-[480px] self-center rounded-2xl border p-4"
+					style={{ backgroundColor: surfaceColor, borderColor, gap: 12 }}
+				>
 					<AppText variant="subtitle" weight="semibold">{title}</AppText>
 
 					<TextInput
-						style={[styles.input, { color: textColor, backgroundColor: inputBgColor, borderColor }]}
+						className="h-11 w-full rounded-lg border px-3"
+						style={{ color: textColor, backgroundColor: inputBgColor, borderColor }}
 						placeholder={placeholder}
 						value={value}
 						onChangeText={onChangeValue}
@@ -59,14 +63,14 @@ export default function AppModal({
 
 					{error ? <AppText tone="warning">{error}</AppText> : null}
 
-					<View style={styles.actions}>
+					<View className="flex-row gap-2.5">
 						<AppButton
 							title="Отмена"
 							onPress={onClose}
 							variant="secondary"
 							fullWidth={false}
 							disabled={isSubmitting}
-							style={styles.actionBtn}
+							style={{ flex: 1 }}
 						/>
 						<AppButton
 							title={saveLabel}
@@ -74,7 +78,7 @@ export default function AppModal({
 							loading={isSubmitting}
 							disabled={isSubmitting}
 							fullWidth={false}
-							style={styles.actionBtn}
+							style={{ flex: 1 }}
 						/>
 					</View>
 				</View>
@@ -82,37 +86,3 @@ export default function AppModal({
 		</NativeModal>
 	);
 }
-
-const styles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		padding: 20,
-		justifyContent: "center",
-	},
-	backdrop: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: "#00000073",
-	},
-	container: {
-		borderRadius: 16,
-		padding: 16,
-		gap: 12,
-		maxWidth: 480,
-		width: "100%",
-		alignSelf: "center",
-	},
-	input: {
-		width: "100%",
-		height: 44,
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-	},
-	actions: {
-		flexDirection: "row",
-		gap: 10,
-	},
-	actionBtn: {
-		flex: 1,
-	},
-});

@@ -1,6 +1,6 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { useEffect, useMemo, useState } from "react";
-import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { LayoutChangeEvent, View } from "react-native";
 import Animated, {
 	Easing,
 	runOnJS,
@@ -171,10 +171,16 @@ export default function MoodIsland({ moodName, color = "" }: MoodIslandProps) {
 	}
 
 	return (
-		<View style={styles.anchor} pointerEvents="none">
+		<View className="absolute left-0 right-0 top-[-36px] z-[4] items-center" pointerEvents="none">
 			<Animated.View
 				style={[
-					styles.pill,
+					{
+						height: PILL_HEIGHT,
+						borderRadius: PILL_HEIGHT / 2,
+						overflow: "hidden",
+						borderWidth: 1,
+						justifyContent: "center",
+					},
 					{
 						backgroundColor,
 						borderColor,
@@ -182,18 +188,32 @@ export default function MoodIsland({ moodName, color = "" }: MoodIslandProps) {
 					islandAnimatedStyle,
 				]}
 			>
-				<Animated.View style={[styles.content, contentAnimatedStyle]}>
-					<View style={[styles.dot, { backgroundColor: dotColor }]} />
-					<AppText weight="bold" numberOfLines={1} style={[styles.label, { color: textColor }]}>
+				<Animated.View
+					style={[
+						{
+							flexDirection: "row",
+							alignItems: "center",
+							gap: 10,
+							paddingHorizontal: HORIZONTAL_PADDING,
+							height: PILL_HEIGHT,
+						},
+						contentAnimatedStyle,
+					]}
+				>
+					<View className="h-2 w-2 rounded-full" style={{ backgroundColor: dotColor }} />
+					<AppText weight="bold" numberOfLines={1} className="uppercase tracking-[0.4px]" style={{ color: textColor }}>
 						{displayMoodName}
 					</AppText>
 				</Animated.View>
 			</Animated.View>
 
-			<View style={styles.measure}>
-				<View style={styles.content} onLayout={handleMeasure}>
-					<View style={[styles.dot, { backgroundColor: dotColor }]} />
-					<AppText weight="bold" numberOfLines={1} style={styles.label}>
+			<View className="absolute opacity-0">
+				<View
+					className="h-[38px] flex-row items-center gap-2.5 px-4"
+					onLayout={handleMeasure}
+				>
+					<View className="h-2 w-2 rounded-full" style={{ backgroundColor: dotColor }} />
+					<AppText weight="bold" numberOfLines={1} className="uppercase tracking-[0.4px]">
 						{displayMoodName || " "}
 					</AppText>
 				</View>
@@ -201,41 +221,3 @@ export default function MoodIsland({ moodName, color = "" }: MoodIslandProps) {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	anchor: {
-		position: "absolute",
-		left: 0,
-		right: 0,
-		top: -36,
-		alignItems: "center",
-		zIndex: 4,
-	},
-	pill: {
-		height: PILL_HEIGHT,
-		borderRadius: PILL_HEIGHT / 2,
-		overflow: "hidden",
-		borderWidth: 1,
-		justifyContent: "center",
-	},
-	content: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 10,
-		paddingHorizontal: HORIZONTAL_PADDING,
-		height: PILL_HEIGHT,
-	},
-	dot: {
-		width: 8,
-		height: 8,
-		borderRadius: 4,
-	},
-	label: {
-		textTransform: "uppercase",
-		letterSpacing: 0.4,
-	},
-	measure: {
-		position: "absolute",
-		opacity: 0,
-	},
-});

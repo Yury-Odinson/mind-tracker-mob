@@ -7,7 +7,7 @@ import { deleteMood, updateMood } from '@/repositories/mood.repository';
 import { useFocusEffect } from '@react-navigation/native';
 import { MoveLeft, MoveRight } from 'lucide-react-native';
 import { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 type MoodActionResult = {
 	isSuccess: boolean;
@@ -111,11 +111,12 @@ export default function DiaryScreen() {
 		if (!totalPages || totalPages <= 1) return null;
 
 		return (
-			<View style={styles.pagination}>
+			<View className="flex-row gap-2">
 				<Pressable
 					onPress={pagination.goPrev}
 					disabled={!pagination.canPrev || isLoading}
-					style={[styles.paginationBtn, { borderColor }]}
+					className="h-9 w-9 items-center justify-center rounded-lg border px-2.5"
+					style={{ borderColor }}
 				>
 					<MoveLeft color={pagination.canPrev && !isLoading ? textColor : secondaryText} />
 				</Pressable>
@@ -135,13 +136,11 @@ export default function DiaryScreen() {
 							key={item}
 							onPress={() => pagination.goTo(item)}
 							disabled={isActive || isLoading}
-							style={[
-								styles.paginationBtn,
-								{
-									borderColor: isActive ? accentColor : borderColor,
-									backgroundColor: isActive ? accentColor : "transparent",
-								},
-							]}
+							className="h-9 w-9 items-center justify-center rounded-lg border px-2.5"
+							style={{
+								borderColor: isActive ? accentColor : borderColor,
+								backgroundColor: isActive ? accentColor : "transparent",
+							}}
 						>
 							<Text style={{ color: isActive ? "#fff" : textColor }}>{item}</Text>
 						</Pressable>
@@ -151,7 +150,8 @@ export default function DiaryScreen() {
 				<Pressable
 					onPress={pagination.goNext}
 					disabled={!pagination.canNext || isLoading}
-					style={[styles.paginationBtn, { borderColor }]}
+					className="h-9 w-9 items-center justify-center rounded-lg border px-2.5"
+					style={{ borderColor }}
 				>
 					<MoveRight color={pagination.canNext && !isLoading ? textColor : secondaryText} />
 				</Pressable>
@@ -161,7 +161,7 @@ export default function DiaryScreen() {
 
 	return (
 		<>
-			<View style={styles.container}>
+			<View className="flex-1 gap-4 p-5">
 				<AppText variant={"title"} weight={"bold"}>Дневник</AppText>
 
 				<ScrollView>
@@ -181,35 +181,9 @@ export default function DiaryScreen() {
 				</ScrollView>
 
 			</View>
-			<View style={styles.actions}>
+			<View className="items-center px-5 py-1">
 				{paginationSection()}
 			</View>
 		</>
 	);
-};
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		padding: 20,
-		gap: 16
-	},
-	actions: {
-		paddingHorizontal: 20,
-		paddingVertical: 4,
-		alignItems: "center",
-	},
-	pagination: {
-		flexDirection: "row",
-		gap: 8,
-	},
-	paginationBtn: {
-		width: 36,
-		height: 36,
-		borderWidth: 1,
-		borderRadius: 8,
-		alignItems: "center",
-		justifyContent: "center",
-		paddingHorizontal: 10,
-	}
-});
+}

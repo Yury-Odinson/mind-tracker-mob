@@ -1,4 +1,3 @@
-import "../global.css";
 import { Colors } from "@/constants/theme";
 import useAuth from "@/store/auth";
 import useMe from "@/store/me";
@@ -7,9 +6,10 @@ import useHandleTheme from "@/store/theme";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
-import { StatusBar, StyleSheet } from "react-native";
+import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import "../global.css";
 
 export default function RootLayout() {
 	const hydrateSession = useAuth((state) => state.hydrateSession);
@@ -43,7 +43,7 @@ export default function RootLayout() {
 
 		router.push("/(app)/profile");
 
-			clearMe();
+		clearMe();
 	}, [clearMe, fetchMe, isAuthenticated, isAuthHydrated, isOnboardingCompleted, isOnboardingHydrated]);
 
 	const lightAppTheme = {
@@ -69,10 +69,11 @@ export default function RootLayout() {
 	const backgroundColor = Colors[theme].background;
 
 	return (
-		<GestureHandlerRootView style={styles.container}>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+
 			<ThemeProvider value={appTheme}>
 				<SafeAreaProvider>
-					<SafeAreaView style={[styles.container, { backgroundColor }]} edges={["top"]}>
+					<SafeAreaView className="flex-1 max-w-[500px]" edges={["top"]}>
 						<StatusBar />
 						<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
 					</SafeAreaView>
@@ -81,9 +82,3 @@ export default function RootLayout() {
 		</GestureHandlerRootView>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-});

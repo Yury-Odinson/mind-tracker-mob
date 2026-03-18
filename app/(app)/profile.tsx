@@ -5,8 +5,7 @@ import Wheel from '@/components/Wheel';
 import { useMoodAdd } from '@/hooks/use-mood-add';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import useMe from '@/store/me';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { authStyles } from '../(auth)/login';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'react-native';
 
 export default function ProfileScreen() {
 	const {
@@ -36,20 +35,20 @@ export default function ProfileScreen() {
 
 	return (
 		<Pressable
-			style={{ flex: 1 }}
+			className="flex-1"
 			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
 		>
 
-			<View style={styles.container}>
+			<View className="flex-1 gap-4 p-5">
 
-				<View style={styles.profile}>
+				<View className="flex-1 justify-between">
 
-					<View style={{ gap: 16 }}>
+					<View className="gap-4">
 						<AppText variant={"title"} weight={"bold"}>{isMeLoading ? `Привет!` : `Привет, ${name}!`}</AppText>
 						<AppText variant={"subtitle"}>Что ты сейчас чувствуешь?</AppText>
 					</View>
 
-					<View style={{ marginTop: 20, marginHorizontal: -20, maxWidth: 500 }}>
+					<View className="-mx-5 mt-5 max-w-[500px]">
 						<Wheel onMoodSelect={handleMoodSelect} />
 					</View>
 
@@ -57,17 +56,16 @@ export default function ProfileScreen() {
 						behavior={Platform.OS === "ios" ? "position" : "height"}
 						keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
 					>
-						<View style={[{ backgroundColor: backgroundColor }, styles.actions]}>
+						<View className="mt-11 gap-4 rounded-[30px] p-5" style={{ backgroundColor }}>
 
 							<MoodIsland moodName={moodName} color={moodColor} />
 							<TextInput
-								style={[{
+								className="relative h-10 w-full rounded-2xl border px-2.5"
+								style={{
 									color: textColor,
 									backgroundColor: inputBgColor,
 									borderColor: borderStyle,
-									borderRadius: 16
-
-								}, authStyles.input]}
+								}}
 								placeholder="Добавьте заметку... (по желанию)"
 								readOnly={!moodId}
 								value={note}
@@ -88,22 +86,4 @@ export default function ProfileScreen() {
 			</View>
 		</Pressable>
 	);
-};
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		padding: 20,
-		gap: 16,
-	},
-	profile: {
-		flex: 1,
-		justifyContent: "space-between"
-	},
-	actions: {
-		marginTop: 44,
-		padding: 20,
-		gap: 16,
-		borderRadius: 30
-	},
-});
+}

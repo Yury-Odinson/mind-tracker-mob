@@ -10,8 +10,7 @@ import { UpdateMeFieldDTO } from "@/types/DTO";
 import { Link } from "expo-router";
 import { Moon, Pencil, Sun } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, KeyboardTypeOptions, StyleSheet, Switch, View } from "react-native";
-import { authStyles } from "../(auth)/login";
+import { Alert, KeyboardTypeOptions, Switch, View } from "react-native";
 
 type EditableFieldConfig = {
 	label: string;
@@ -120,13 +119,14 @@ export default function SettingsScreen() {
 	const userAction = () => {
 		if (userStatus !== "auth") {
 			return (
-				<View style={[{ borderTopColor: borderStyle }, authStyles.assistant]}>
+				<View className="mt-auto w-full items-center gap-2.5 border-t pt-4" style={{ borderTopColor: borderStyle }}>
 					<Link
 						href={"/(auth)/login"}
-						style={[{
+						className="border-b text-[18px] font-semibold"
+						style={{
 							color: accentColor,
 							borderBottomColor: accentColor,
-						}, authStyles.link]}
+						}}
 					>
 						Авторизоваться
 					</Link>
@@ -149,25 +149,35 @@ export default function SettingsScreen() {
 	const currentFieldConfig = activeField ? editableFieldConfig[activeField] : null;
 
 	return (
-		<View style={styles.container}>
+		<View className="flex-1 gap-4 p-5">
 			<AppText variant={"title"} weight={"bold"}>Настройки</AppText>
 
 			{userStatus === "auth" && (
 				<View>
-					<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Аккаунт</AppText>
+					<AppText variant={"subtitle"} weight={"semibold"} className="mb-2.5">Аккаунт</AppText>
 
-					<View style={[{ borderColor, backgroundColor: inputBgColor }, styles.item]}>
+					<View
+						className="gap-4 rounded-[18px] border p-2"
+						style={{ borderColor, backgroundColor: inputBgColor }}
+					>
 						{editableFields.map((field) => (
-							<View key={field} style={styles.inputLabel}>
+							<View key={field} className="relative w-full">
 								<AppText variant={"placeholder"}>{editableFieldConfig[field].label}</AppText>
 
-								<View style={[styles.readonlyInput, { borderColor, backgroundColor: inputBgColor }]}>
-									<AppText numberOfLines={1} style={[styles.readonlyText, { color: textColor }]}>
+								<View
+									className="h-10 w-full flex-row items-center rounded-xl border pl-2.5 pr-1"
+									style={{ borderColor, backgroundColor: inputBgColor }}
+								>
+									<AppText numberOfLines={1} className="flex-1 pr-2" style={{ color: textColor }}>
 										{getDisplayValue(field)}
 									</AppText>
 
 									<AppButton
-										style={styles.inputBtn}
+										style={{
+											minHeight: 32,
+											width: 32,
+											backgroundColor: "transparent",
+										}}
 										onPress={() => openFieldEditor(field)}
 										fullWidth={false}
 										icon={<Pencil size={16} stroke={secondaryTextColor} />}
@@ -180,12 +190,15 @@ export default function SettingsScreen() {
 			)}
 
 			<View>
-				<AppText variant={"subtitle"} weight={"semibold"} style={{ marginBottom: 10 }}>Внешний вид</AppText>
+				<AppText variant={"subtitle"} weight={"semibold"} className="mb-2.5">Внешний вид</AppText>
 
-				<View style={[{ borderColor, backgroundColor: inputBgColor }, styles.item, styles.appearanceItem]}>
+				<View
+					className="flex-row items-center gap-4 rounded-[18px] border p-2"
+					style={{ borderColor, backgroundColor: inputBgColor }}
+				>
 					<AppText>Тема оформления</AppText>
 
-					<View style={{ marginLeft: "auto" }}>
+					<View className="ml-auto">
 						{themeIcon()}
 					</View>
 
@@ -211,44 +224,3 @@ export default function SettingsScreen() {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		padding: 20,
-		gap: 16,
-	},
-	item: {
-		padding: 8,
-		gap: 16,
-		borderWidth: 1,
-		borderRadius: 18,
-	},
-	appearanceItem: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	inputLabel: {
-		position: "relative",
-		width: "100%",
-	},
-	readonlyInput: {
-		width: "100%",
-		height: 40,
-		borderWidth: 1,
-		borderRadius: 12,
-		paddingLeft: 10,
-		paddingRight: 4,
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	readonlyText: {
-		flex: 1,
-		paddingRight: 8,
-	},
-	inputBtn: {
-		minHeight: 32,
-		width: 32,
-		backgroundColor: "transparent",
-	},
-});

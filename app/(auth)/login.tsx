@@ -4,7 +4,7 @@ import { useLoginAuth } from "@/hooks/use-login-auth";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { Link } from "expo-router";
 import React from "react";
-import { Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Keyboard, Platform, Pressable, TextInput, View } from "react-native";
 
 export default function LoginScreen() {
 	const {
@@ -24,15 +24,20 @@ export default function LoginScreen() {
 
 	return (
 		<Pressable
-			style={{ flex: 1 }}
+			className="flex-1"
 			onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
 		>
-			<View style={authStyles.container}>
-				<AppText variant={"title"} weight={"bold"} style={{ marginTop: 100, fontSize: 34 }}>Mind tracker</AppText>
-				<AppText variant={"subtitle"} tone={"secondaryText"} style={authStyles.description}>Отмечайте эмоции и наблюдайте динамику</AppText>
+			<View className="flex-1 items-center justify-center gap-4 p-5">
+				<AppText variant={"title"} weight={"bold"} className="mt-[100px] text-[34px] leading-[40px]">
+					Mind tracker
+				</AppText>
+				<AppText variant={"subtitle"} tone={"secondaryText"} className="mb-5 text-center">
+					Отмечайте эмоции и наблюдайте динамику
+				</AppText>
 
 				<TextInput
-					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
+					className="relative h-10 w-full rounded-[18px] border px-2.5"
+					style={{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }}
 					placeholder="Email"
 					value={email}
 					onChangeText={setEmail}
@@ -40,7 +45,8 @@ export default function LoginScreen() {
 					autoCapitalize="none"
 				/>
 				<TextInput
-					style={[{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }, authStyles.input]}
+					className="relative h-10 w-full rounded-[18px] border px-2.5"
+					style={{ color: textColor, backgroundColor: inputBgColor, borderColor: borderStyle }}
 					placeholder="Password"
 					value={password}
 					onChangeText={setPassword}
@@ -56,59 +62,25 @@ export default function LoginScreen() {
 					style={{ marginTop: 16 }}
 				/>
 
-				<Link href={"/(auth)/register"}
-					style={[{ color: accentColor, borderBottomColor: accentColor, borderBottomWidth: 1 },
-					authStyles.linkPass]}
-				>Забыли пароль?</Link>
+				<Link
+					href={"/(auth)/register"}
+					className="border-b font-semibold"
+					style={{ color: accentColor, borderBottomColor: accentColor }}
+				>
+					Забыли пароль?
+				</Link>
 
-				<View style={[{ borderTopColor: borderStyle }, authStyles.assistant]}>
+				<View className="mt-auto w-full items-center gap-2.5 border-t pt-4" style={{ borderTopColor: borderStyle }}>
 					<AppText tone={"secondaryText"}>Нет аккаунта?</AppText>
-					<Link href={"/(auth)/register"} style={[{ color: accentColor, borderBottomColor: accentColor }, authStyles.link]}>Зарегистрироваться</Link>
+					<Link
+						href={"/(auth)/register"}
+						className="border-b text-[18px] font-semibold"
+						style={{ color: accentColor, borderBottomColor: accentColor }}
+					>
+						Зарегистрироваться
+					</Link>
 				</View>
 			</View>
 		</Pressable>
 	);
-};
-
-export const authStyles = StyleSheet.create({
-	container: {
-		flex: 1,
-		gap: 16,
-		justifyContent: "center",
-		alignItems: "center",
-		padding: 20,
-	},
-	description: {
-		marginBottom: 20,
-		fontSize: 20,
-		textAlign: "center",
-	},
-	input: {
-		position: "relative",
-		width: "100%",
-		height: 40,
-		borderWidth: 1,
-		borderRadius: 18,
-		paddingHorizontal: 10,
-	},
-	errorText: {
-		color: 'red',
-		marginBottom: 10,
-	},
-	assistant: {
-		padding: 16,
-		gap: 10,
-		marginTop: "auto",
-		width: "100%",
-		borderTopWidth: 1,
-		alignItems: "center"
-	},
-	link: {
-		fontSize: 18,
-		fontWeight: 600,
-		borderBottomWidth: 1
-	},
-	linkPass: {
-		fontWeight: 600
-	}
-});
+}

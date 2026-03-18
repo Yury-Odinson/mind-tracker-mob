@@ -1,7 +1,7 @@
 // components/AppText.tsx
 import { ThemeColorName, useThemeColor } from "@/hooks/use-theme-color";
 import React from "react";
-import { StyleProp, StyleSheet, Text, TextProps, TextStyle, } from "react-native";
+import { StyleProp, Text, TextProps, TextStyle } from "react-native";
 
 type Variant = "title" | "subtitle" | "body" | "caption" | "placeholder";
 type Tone = "text" | "secondaryText" | "accent" | "warning" | "success";
@@ -13,22 +13,16 @@ type AppTextProps = TextProps & {
 	backgroundTone?: ThemeColorName;
 	weight?: Weight;
 	style?: StyleProp<TextStyle>;
+	className?: string;
 };
 
-const variantStyles = StyleSheet.create({
-	title: { fontSize: 28, lineHeight: 34 },
-	subtitle: { fontSize: 20, lineHeight: 26 },
-	body: { fontSize: 16, lineHeight: 22 },
-	caption: { fontSize: 12, lineHeight: 16 },
-	placeholder: {
-		position: "absolute",
-		top: -8,
-		left: 8,
-		paddingHorizontal: 8,
-		fontSize: 12,
-		zIndex: 1,
-	}
-});
+const variantClasses: Record<Variant, string> = {
+	title: "text-[28px] leading-[34px]",
+	subtitle: "text-[20px] leading-[26px]",
+	body: "text-base leading-[22px]",
+	caption: "text-xs leading-4",
+	placeholder: "absolute -top-2 left-2 z-10 px-2 text-xs",
+};
 
 const weightMap: Record<Weight, TextStyle["fontWeight"]> = {
 	regular: "400",
@@ -44,6 +38,7 @@ export default function AppText({
 	weight = "regular",
 	style,
 	children,
+	className,
 	...rest
 }: AppTextProps) {
 	const variants = Array.isArray(variant) ? variant : [variant];
@@ -56,9 +51,9 @@ export default function AppText({
 	return (
 		<Text
 			{...rest}
+			className={[...variants.map((v) => variantClasses[v]), className].filter(Boolean).join(" ")}
 			style={[
 				{ color, fontWeight: weightMap[weight] },
-				...variants.map((v) => variantStyles[v]),
 				resolvedBackgroundTone ? { backgroundColor } : null,
 				style,
 			]}

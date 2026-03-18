@@ -31,7 +31,7 @@ export const Colors = {
 			secondary: {
 				bg: "#E2E8F0",
 				text: "#212529",
-				border: "transparent",
+				border: "#CBD5E1",
 				pressedBg: "#CBD5E1",
 				disabledBg: "#F1F5F9",
 				disabledText: "#94A3B8"
@@ -61,11 +61,11 @@ export const Colors = {
 				disabledText: "#6C757D"
 			},
 			secondary: {
-				bg: "rgba(226, 232, 240, 0.1)",
+				bg: "#2B3440",
 				text: "#ECE9E6",
-				border: "transparent",
-				pressedBg: "rgba(226, 232, 240, 0.2)",
-				disabledBg: "rgba(255, 255, 255, 0.05)",
+				border: "#3F4B5A",
+				pressedBg: "#364250",
+				disabledBg: "#1F2630",
 				disabledText: "#6C757D"
 			}
 		}

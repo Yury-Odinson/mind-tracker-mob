@@ -1,6 +1,6 @@
 import { MOOD_SECTORS } from "@/constants/moods";
 import { useMemo, useState } from "react";
-import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { LayoutChangeEvent, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
 	cancelAnimation,
@@ -175,7 +175,7 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 	}, [geometry]);
 
 	if (!geometry) {
-		return <View style={styles.container} onLayout={handleLayout} />;
+		return <View className="overflow-hidden" style={{ height: VIEWPORT_HEIGHT }} onLayout={handleLayout} />;
 	}
 
 	const {
@@ -288,12 +288,14 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 	const gesture = Gesture.Exclusive(panGesture, tapGesture);
 
 	return (
-		<View style={styles.container} onLayout={handleLayout}>
+		<View className="overflow-hidden" style={{ height: VIEWPORT_HEIGHT }} onLayout={handleLayout}>
 			<GestureDetector gesture={gesture}>
-				<View style={styles.gestureSurface}>
+				<View className="flex-1">
 					<Animated.View
 						style={[
-							styles.wheel,
+							{
+								position: "absolute",
+							},
 							{
 								width: wheelDiameter,
 								height: wheelDiameter,
@@ -354,16 +356,3 @@ export default function Wheel({ onMoodSelect }: WheelProps) {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		height: VIEWPORT_HEIGHT,
-		overflow: "hidden",
-	},
-	gestureSurface: {
-		flex: 1,
-	},
-	wheel: {
-		position: "absolute",
-	},
-});
