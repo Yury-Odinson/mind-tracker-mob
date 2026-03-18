@@ -4,6 +4,15 @@ import { MoodDTO } from "@/types/DTO";
 import { formatedDate } from "@/utils/formatedDate";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import Animated, {
+	Easing,
+	FadeIn,
+	FadeOut,
+	LinearTransition,
+	useAnimatedStyle,
+	useSharedValue,
+	withTiming,
+} from "react-native-reanimated";
 
 type MoodActionResult = {
 	isSuccess: boolean;
@@ -16,11 +25,18 @@ type MoodUpdatePayload = {
 };
 
 type MoodListItemProps = Pick<MoodDTO, "id" | "moodId" | "moodName" | "note" | "createdAt" | "color"> & {
+	isEditing: boolean;
+	onEditingChange: (entryId: number, nextIsEditing: boolean) => void;
 	onUpdate: (entryId: number, payload: MoodUpdatePayload) => Promise<MoodActionResult>;
 	onDelete: (entryId: number) => Promise<MoodActionResult>;
 };
 
 const moodOptions = MOOD_SECTORS.flatMap((sector) => sector.rings);
+const cardLayoutTransition = LinearTransition.duration(260).easing(Easing.out(Easing.cubic));
+const colorTransition = {
+	duration: 240,
+	easing: Easing.out(Easing.cubic),
+};
 
 function textColorByBackground(hex: string): string {
 	const normalized = hex.replace("#", "");
@@ -36,6 +52,19 @@ function textColorByBackground(hex: string): string {
 	return luminance > 0.62 ? "#212529" : "#FFFFFF";
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+	const normalized = hex.replace("#", "");
+	if (normalized.length !== 6) {
+		return `rgba(33, 37, 41, ${alpha})`;
+	}
+
+	const red = parseInt(normalized.slice(0, 2), 16);
+	const green = parseInt(normalized.slice(2, 4), 16);
+	const blue = parseInt(normalized.slice(4, 6), 16);
+
+	return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 export default function MoodListItem({
 	id,
 	moodId,
@@ -43,10 +72,11 @@ export default function MoodListItem({
 	note,
 	createdAt,
 	color,
+	isEditing,
+	onEditingChange,
 	onUpdate,
 	onDelete,
 }: MoodListItemProps) {
-	const [isEditing, setIsEditing] = useState(false);
 	const [selectedMoodId, setSelectedMoodId] = useState(moodId);
 	const [selectedMoodName, setSelectedMoodName] = useState(moodName);
 	const [selectedMoodColor, setSelectedMoodColor] = useState(color);
@@ -61,6 +91,19 @@ export default function MoodListItem({
 	const inputBgColor = useThemeColor({}, "inputBg");
 	const warningColor = useThemeColor({}, "warning");
 	const accentColor = useThemeColor({}, "accent");
+	const date = formatedDate(createdAt);
+	const activeColor = (isEditing ? selectedMoodColor : color) || "#64748B";
+	const moodTitle = isEditing ? selectedMoodName : moodName;
+	const notePreview = (isEditing ? nextNote : note).trim() || "";
+	const cardColor = useSharedValue(hexToRgba(activeColor, 0.12));
+	const stripeColor = useSharedValue(activeColor);
+
+	const cardAnimatedStyle = useAnimatedStyle(() => ({
+		backgroundColor: cardColor.value,
+	}));
+	const stripeAnimatedStyle = useAnimatedStyle(() => ({
+		backgroundColor: stripeColor.value,
+	}));
 
 	useEffect(() => {
 		if (isEditing) {
@@ -74,16 +117,17 @@ export default function MoodListItem({
 		setError("");
 	}, [color, isEditing, moodId, moodName, note]);
 
-	const date = formatedDate(createdAt);
-	const activeColor = isEditing ? selectedMoodColor : color;
-	const notePreview = (isEditing ? nextNote : note).trim() || "";
+	useEffect(() => {
+		cardColor.value = withTiming(hexToRgba(activeColor, 0.12), colorTransition);
+		stripeColor.value = withTiming(activeColor, colorTransition);
+	}, [activeColor, cardColor, stripeColor]);
 
 	const isChanged = useMemo(() => {
 		return selectedMoodId !== moodId || nextNote.trim() !== note.trim();
 	}, [moodId, nextNote, note, selectedMoodId]);
 
 	const startEdit = () => {
-		setIsEditing(true);
+		onEditingChange(id, true);
 		setError("");
 	};
 
@@ -92,7 +136,7 @@ export default function MoodListItem({
 			return;
 		}
 
-		setIsEditing(false);
+		onEditingChange(id, false);
 		setSelectedMoodId(moodId);
 		setSelectedMoodName(moodName);
 		setSelectedMoodColor(color);
@@ -128,7 +172,7 @@ export default function MoodListItem({
 			return;
 		}
 
-		setIsEditing(false);
+		onEditingChange(id, false);
 		setIsUpdating(false);
 	};
 
@@ -147,6 +191,7 @@ export default function MoodListItem({
 			return;
 		}
 
+		onEditingChange(id, false);
 		setIsDeleting(false);
 	};
 
@@ -167,14 +212,46 @@ export default function MoodListItem({
 	};
 
 	return (
-		<View
-			className="relative my-1.5 overflow-hidden rounded-[18px] border"
-			style={{ backgroundColor: `${activeColor}20`, borderColor }}
+		<Animated.View
+			layout={cardLayoutTransition}
+			style={[
+				{
+					position: "relative",
+					marginVertical: 6,
+					overflow: "hidden",
+					borderRadius: 18,
+					borderWidth: 1,
+					borderColor,
+				},
+				cardAnimatedStyle,
+			]}
 		>
-			<View className="absolute bottom-0 left-0 top-0 w-4" style={{ backgroundColor: activeColor }}></View>
+			<Animated.View
+				style={[
+					{
+						position: "absolute",
+						bottom: 0,
+						left: 0,
+						top: 0,
+						width: 16,
+					},
+					stripeAnimatedStyle,
+				]}
+			/>
+
 			<View className="gap-2 p-3 pl-9">
 				<Text className="text-xs" style={{ color: secondaryTextColor }}>{date}</Text>
-				<Text className="text-[20px]" style={{ color: textColor }}>{isEditing ? selectedMoodName : moodName}</Text>
+				<View className="min-h-7 justify-center">
+					<Animated.Text
+						key={moodTitle}
+						entering={FadeIn.duration(170)}
+						exiting={FadeOut.duration(120)}
+						className="text-[20px]"
+						style={{ color: textColor }}
+					>
+						{moodTitle}
+					</Animated.Text>
+				</View>
 				<Text className="text-base" style={{ color: secondaryTextColor }}>{notePreview}</Text>
 
 				<View className="flex-row gap-2.5">
@@ -202,7 +279,18 @@ export default function MoodListItem({
 				</View>
 
 				{isEditing ? (
-					<View className="mt-1 gap-2.5 border-t pt-2.5" style={{ borderColor }}>
+					<Animated.View
+						layout={cardLayoutTransition}
+						entering={FadeIn.duration(180)}
+						exiting={FadeOut.duration(120)}
+						style={{
+							marginTop: 4,
+							gap: 10,
+							borderTopWidth: 1,
+							paddingTop: 10,
+							borderColor,
+						}}
+					>
 						<Text className="text-[13px] font-semibold" style={{ color: secondaryTextColor }}>Эмоция</Text>
 						<View className="flex-row flex-wrap gap-2">
 							{moodOptions.map((item) => {
@@ -263,11 +351,11 @@ export default function MoodListItem({
 								</Text>
 							</Pressable>
 						</View>
-					</View>
+					</Animated.View>
 				) : null}
 
 				{error ? <Text className="text-[13px]" style={{ color: warningColor }}>{error}</Text> : null}
 			</View>
-		</View>
+		</Animated.View>
 	);
 }

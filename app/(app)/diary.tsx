@@ -6,7 +6,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { deleteMood, updateMood } from '@/repositories/mood.repository';
 import { useFocusEffect } from '@react-navigation/native';
 import { MoveLeft, MoveRight } from 'lucide-react-native';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 type MoodActionResult = {
@@ -51,6 +51,7 @@ function mapActionError(action: "update" | "delete", status: number | null): str
 export default function DiaryScreen() {
 
 	const { moods, page, totalPages, isLoading, loadMoods } = useMoodList();
+	const [editingEntryId, setEditingEntryId] = useState<number | null>(null);
 
 	const textColor = useThemeColor({}, "text");
 	const accentColor = useThemeColor({}, "accent");
@@ -61,15 +62,27 @@ export default function DiaryScreen() {
 		current: page,
 		total: totalPages ?? 0,
 		onChange: (nextPage) => {
+			setEditingEntryId(null);
 			void loadMoods(nextPage);
 		},
 	});
 
 	useFocusEffect(
 		useCallback(() => {
+			setEditingEntryId(null);
 			void loadMoods();
 		}, [loadMoods]),
 	);
+
+	const handleEditingChange = useCallback((entryId: number, nextIsEditing: boolean) => {
+		setEditingEntryId((prev) => {
+			if (nextIsEditing) {
+				return entryId;
+			}
+
+			return prev === entryId ? null : prev;
+		});
+	}, []);
 
 	const handleUpdateMood = useCallback(async (entryId: number, payload: MoodUpdatePayload): Promise<MoodActionResult> => {
 		try {
@@ -78,6 +91,7 @@ export default function DiaryScreen() {
 				moodId: payload.moodId,
 				note: payload.note,
 			});
+			setEditingEntryId((prev) => (prev === entryId ? null : prev));
 			await loadMoods(page);
 			return {
 				isSuccess: true,
@@ -94,6 +108,7 @@ export default function DiaryScreen() {
 	const handleDeleteMood = useCallback(async (entryId: number): Promise<MoodActionResult> => {
 		try {
 			await deleteMood({ entryId });
+			setEditingEntryId((prev) => (prev === entryId ? null : prev));
 			await loadMoods(page);
 			return {
 				isSuccess: true,
@@ -174,6 +189,8 @@ export default function DiaryScreen() {
 							note={e.note}
 							createdAt={e.createdAt}
 							color={e.color}
+							isEditing={editingEntryId === e.id}
+							onEditingChange={handleEditingChange}
 							onUpdate={handleUpdateMood}
 							onDelete={handleDeleteMood}
 						/>
