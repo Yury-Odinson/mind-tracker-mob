@@ -67,14 +67,15 @@ export default function RootLayout() {
 	const theme = useHandleTheme((state) => state.theme);
 	const appTheme = theme === 'dark' ? darkAppTheme : lightAppTheme;
 	const backgroundColor = Colors[theme].background;
+	const statusBarStyle = theme === "dark" ? "light-content" : "dark-content";
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 
 			<ThemeProvider value={appTheme}>
 				<SafeAreaProvider>
-					<SafeAreaView className="flex-1 max-w-[500px]" edges={["top"]}>
-						<StatusBar />
+					<SafeAreaView className="flex-1 max-w-[500px]" style={{ backgroundColor }} edges={["top"]}>
+						<StatusBar barStyle={statusBarStyle} backgroundColor={backgroundColor} />
 						<Stack screenOptions={{ contentStyle: { backgroundColor }, headerShown: false }} />
 					</SafeAreaView>
 				</SafeAreaProvider>

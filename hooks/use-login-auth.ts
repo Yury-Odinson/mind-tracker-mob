@@ -1,5 +1,5 @@
-import { apiImportMoods } from "@/api/moods/import";
 import { apiAuth } from "@/api/auth";
+import { apiImportMoods } from "@/api/moods/import";
 import { clearGuestMoods, getGuestMoodImportEntries } from "@/repositories/mood.repository";
 import useAuth from "@/store/auth";
 import { useCallback, useState } from "react";
@@ -49,8 +49,8 @@ async function importGuestMoodsAfterLogin(): Promise<void> {
 }
 
 export function useLoginAuth() {
-	const [email, setEmail] = useState("we");
-	const [password, setPassword] = useState("we");
+	const [email, setEmail] = useState("we@we.we");
+	const [password, setPassword] = useState("11111111");
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
